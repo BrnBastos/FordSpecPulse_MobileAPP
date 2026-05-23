@@ -327,7 +327,7 @@ npm run ios
 npm run web
 ```
 
-No Android, o script tenta usar um dispositivo conectado. Se não encontrar, ele inicia um emulador automaticamente. O AVD padrão é `FordSpecPulse_API_36`, mas é possível trocar usando `EXPO_ANDROID_AVD`.
+O script Android usa o comportamento padrão do Expo.
 
 ---
 
