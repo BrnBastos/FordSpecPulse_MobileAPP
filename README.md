@@ -16,6 +16,15 @@ O projeto foi criado com base no desafio da Ford sobre **inteligência competiti
 | Bruno Silva | 550416 |
 | João Hoffmann | 550763 |
 
+### Acesso para avaliação
+
+Professor, para conseguir acessar todas as opções do app, utilize o acesso de administrador:
+
+- **Login:** admin@ford.internal
+- **Senha:** admin123
+
+Contas com permissões menores podem acessar apenas parte do fluxo, porque a criação de comparações é limitada pela API backend em Java.
+
 ---
 
 ## Sobre o projeto
@@ -47,10 +56,17 @@ O foco não é apenas mostrar uma ficha técnica, mas ajudar o usuário a entend
 - Zustand
 - AsyncStorage
 - Lucide React Native
+- React Native SVG
 
 ---
 
 ## Principais funcionalidades
+
+### Autenticação
+
+O app possui login, cadastro, logout e rotas protegidas. Depois do login, as chamadas para a API usam token Bearer, com refresh token salvo localmente via **AsyncStorage**.
+
+---
 
 ### Home
 
@@ -148,7 +164,7 @@ A tela exibe:
 - e-mail;
 - permissões;
 - URL da API;
-- se o app está usando API real ou dados mockados;
+- status da autenticação;
 - tecnologias principais usadas no projeto.
 
 ---
@@ -166,22 +182,29 @@ https://ford-spec-pulse-api-production.up.railway.app/api
 Endpoints principais usados:
 
 ```txt
-GET /api/users/me
-GET /api/vehicles
-GET /api/vehicles/:id/versions
-GET /api/versions/:id/specifications
-GET /api/attributes/taxonomy
-POST /api/comparisons
+POST /api/auth/login
+POST /api/auth/register
+POST /api/auth/refresh
+POST /api/auth/logout
+GET /api/usuarios/me
+GET /api/veiculos
+GET /api/veiculos/:id/versoes
+GET /api/versoes/:id/especificacoes
+GET /api/atributos/taxonomia
+POST /api/comparacoes
 ```
 
-Durante o desenvolvimento, também usamos dados mockados. Assim, se a API não estiver rodando no momento da apresentação, o app ainda consegue demonstrar o fluxo principal.
+A URL pode ser alterada pela variável de ambiente `EXPO_PUBLIC_API_BASE_URL`.
+
+Durante o desenvolvimento, alguns serviços mantiveram dados mockados como apoio. Para acessar todas as opções na versão atual, principalmente criar comparações, é necessário autenticar na API real com uma conta que tenha permissão.
 
 ---
 
 ## Fluxo principal do app
 
 ```txt
-Home
+Login
+→ Home
 → Veículos
 → Detalhe do veículo
 → Detalhe da versão
@@ -192,7 +215,7 @@ Home
 
 Passo a passo:
 
-1. O usuário abre o app.
+1. O usuário abre o app e faz login.
 2. Acessa a aba de veículos.
 3. Escolhe um veículo.
 4. Visualiza as versões.
@@ -212,6 +235,8 @@ Passo a passo:
 ```txt
 app/
   _layout.tsx
+  login.tsx
+  register.tsx
   (tabs)/
     _layout.tsx
     index.tsx
@@ -290,6 +315,16 @@ npx expo start
 
 Depois, abra no Expo Go, simulador iOS ou emulador Android.
 
+Também existem scripts por plataforma:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
+No Android, o script tenta usar um dispositivo conectado. Se não encontrar, ele inicia um emulador automaticamente. O AVD padrão é `FordSpecPulse_API_36`, mas é possível trocar usando `EXPO_ANDROID_AVD`.
+
 ---
 
 ## Dependências principais
@@ -300,6 +335,7 @@ Caso precise instalar manualmente:
 npm install axios @tanstack/react-query zustand lucide-react-native
 npx expo install @react-native-async-storage/async-storage
 npx expo install react-native-safe-area-context
+npx expo install react-native-svg
 ```
 
 ---
@@ -307,6 +343,9 @@ npx expo install react-native-safe-area-context
 ## O que foi implementado no MVP
 
 - Home com apresentação da solução;
+- login e cadastro reais;
+- rotas protegidas por sessão autenticada;
+- refresh token e logout;
 - listagem de veículos;
 - busca e filtro simples;
 - detalhe de veículo;
@@ -317,7 +356,7 @@ npx expo install react-native-safe-area-context
 - resultado da comparação;
 - histórico local;
 - tela de perfil;
-- status da API/mock;
+- status da API e autenticação;
 - navegação por abas;
 - rotas dinâmicas;
 - gerenciamento de estado;
@@ -331,11 +370,11 @@ npx expo install react-native-safe-area-context
 |---|---|
 | App mobile | Feito com React Native e Expo |
 | Interface clara | Cards, abas, botões e imagens |
-| Navegação | Expo Router |
-| Consumo de API | Axios e TanStack Query |
+| Navegação | Expo Router com rotas protegidas |
+| Consumo de API | Axios, TanStack Query e Bearer token |
 | Estado global | Zustand |
 | Armazenamento local | AsyncStorage |
-| Dados externos/mockados | API Java planejada + fallback mock |
+| Dados externos | API Java publicada no Railway |
 | Valor ao usuário | Comparação de veículos e análise de gaps |
 | Relação com a Ford | Inteligência competitiva automotiva |
 
@@ -343,14 +382,12 @@ npx expo install react-native-safe-area-context
 
 ## Melhorias futuras
 
-- login real;
 - comparação com mais concorrentes;
 - exportação de relatório;
 - gráficos mais avançados;
-- integração completa com a API final;
 - alertas de mercado;
 - revisão de qualidade dos dados;
-- permissões por usuário.
+- refinamento das permissões por usuário.
 
 ---
 
