@@ -1,56 +1,363 @@
-# Welcome to your Expo app 👋
+# Ford SpecPulse Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile desenvolvido para a sprint de **Mobile Development and IoT**, usando **React Native com Expo**.
 
-## Get started
+O projeto foi criado com base no desafio da Ford sobre **inteligência competitiva automotiva**. A ideia é ter um app simples e funcional para comparar veículos Ford com concorrentes, mostrando versões, atributos técnicos, vantagens, gaps e um resumo da análise.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Integrantes
 
-2. Start the app
+| Nome | RM |
+|---|---:|
+| Carlos Henrique | 558003 |
+| Mauricio Alves | 556214 |
+| Ian Monteiro | 558652 |
+| Bruno Silva | 550416 |
+| João Hoffmann | 550763 |
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Sobre o projeto
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+O **Ford SpecPulse Mobile** é um app pensado para ajudar na comparação de veículos e versões do mercado automotivo.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Comparar carros pode ser difícil porque cada montadora usa nomes diferentes para recursos parecidos, e algumas informações aparecem incompletas. Por isso, o app organiza esses dados de forma mais clara.
 
-## Get a fresh project
+Com ele, o usuário consegue escolher uma versão Ford, escolher uma versão concorrente, selecionar atributos técnicos e gerar uma comparação com resumo, vantagens e pontos de atenção.
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## Objetivo
+
+O objetivo do app é transformar dados técnicos de veículos em uma análise simples e útil.
+
+O foco não é apenas mostrar uma ficha técnica, mas ajudar o usuário a entender onde a Ford tem vantagem, onde existem gaps e quais dados ainda precisam de validação.
+
+---
+
+## Tecnologias usadas
+
+- React Native
+- Expo SDK 56
+- Expo Router
+- TypeScript
+- Axios
+- TanStack Query
+- Zustand
+- AsyncStorage
+- Lucide React Native
+
+---
+
+## Principais funcionalidades
+
+### Home
+
+Tela inicial do app. Ela apresenta a proposta da solução e dá acesso rápido para explorar veículos ou criar uma comparação.
+
+---
+
+### Veículos
+
+Tela onde o usuário consegue ver os veículos disponíveis.
+
+Funcionalidades:
+
+- listar veículos Ford e concorrentes;
+- buscar por marca ou modelo;
+- filtrar entre todos, Ford ou concorrentes;
+- abrir os detalhes de um veículo.
+
+---
+
+### Detalhe do veículo
+
+Mostra as informações principais do veículo selecionado, como marca, modelo, ano, mercado, segmento e versões disponíveis.
+
+Cada versão aparece em um card com informações como motorização, tração, nível da versão e completude dos dados.
+
+---
+
+### Detalhe da versão
+
+Mostra as especificações técnicas de uma versão.
+
+Cada especificação pode ter um status:
+
+| Status | Significado |
+|---|---|
+| Encontrado | A informação foi encontrada |
+| Não disponível | Existe indicação de que o item não está disponível |
+| Não informado | A fonte não confirma se existe ou não |
+| Conflito | Existem informações divergentes |
+| Validação pendente | O dado precisa ser revisado |
+
+Um ponto importante é que o app não trata “não informado” como “não existe”. Isso evita conclusões erradas na comparação.
+
+---
+
+### Comparação
+
+Essa é a parte principal do app.
+
+O usuário escolhe:
+
+1. uma versão Ford;
+2. uma versão concorrente;
+3. os atributos técnicos que quer comparar.
+
+Depois disso, o app gera uma comparação com base nos dados selecionados.
+
+---
+
+### Resultado da comparação
+
+Mostra o resultado da análise feita pelo app.
+
+A tela apresenta:
+
+- confiança da análise;
+- resumo executivo;
+- vantagens da Ford;
+- gaps e riscos;
+- matriz simples dos atributos comparados;
+- alertas de validação.
+
+A ideia é que o resultado seja fácil de entender, mesmo sem olhar apenas para uma tabela técnica.
+
+---
+
+### Histórico
+
+A tela de histórico salva a última comparação feita pelo usuário.
+
+Essa parte usa **AsyncStorage**, então o dado fica salvo localmente no dispositivo.
+
+O usuário pode visualizar a última comparação ou limpar o histórico.
+
+---
+
+### Perfil e status da API
+
+Mostra informações do usuário e o status da integração com a API.
+
+A tela exibe:
+
+- nome do usuário;
+- e-mail;
+- permissões;
+- URL da API;
+- se o app está usando API real ou dados mockados;
+- tecnologias principais usadas no projeto.
+
+---
+
+## Integração com API
+
+O app foi preparado para consumir uma API externa em Java.
+
+URL base usada no projeto:
+
+```txt
+http://localhost:8080/api
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Endpoints principais usados:
 
-### Other setup steps
+```txt
+GET /api/users/me
+GET /api/vehicles
+GET /api/vehicles/:id/versions
+GET /api/versions/:id/specifications
+GET /api/attributes/taxonomy
+POST /api/comparisons
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Durante o desenvolvimento, também usamos dados mockados. Assim, se a API não estiver rodando no momento da apresentação, o app ainda consegue demonstrar o fluxo principal.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Fluxo principal do app
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```txt
+Home
+→ Veículos
+→ Detalhe do veículo
+→ Detalhe da versão
+→ Comparar
+→ Resultado
+→ Histórico
+```
 
-## Join the community
+Passo a passo:
 
-Join our community of developers creating universal apps.
+1. O usuário abre o app.
+2. Acessa a aba de veículos.
+3. Escolhe um veículo.
+4. Visualiza as versões.
+5. Abre uma versão para ver detalhes.
+6. Vai para a tela de comparação.
+7. Escolhe uma versão Ford.
+8. Escolhe uma versão concorrente.
+9. Seleciona os atributos.
+10. Gera a comparação.
+11. Visualiza o resultado.
+12. Salva no histórico.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## Estrutura do projeto
+
+```txt
+app/
+  _layout.tsx
+  (tabs)/
+    _layout.tsx
+    index.tsx
+    vehicles.tsx
+    compare.tsx
+    history.tsx
+    profile.tsx
+  vehicle/
+    [id].tsx
+  version/
+    [id].tsx
+  comparison-result.tsx
+
+assets/
+  images/
+    specpulse-hero.png
+    comparison-illustration.png
+    empty-data.png
+
+components/
+  SpecPulseUI.tsx
+
+constants/
+  specpulseTheme.ts
+
+services/
+  specpulseApi.ts
+
+store/
+  comparisonStore.ts
+```
+
+---
+
+## Explicando as pastas
+
+### app
+
+Contém as telas e rotas do aplicativo.
+
+### components
+
+Contém componentes reutilizáveis, como cards, botões, badges e estados de loading/vazio.
+
+### constants
+
+Contém cores, espaçamentos e padrões visuais.
+
+### services
+
+Contém a comunicação com a API.
+
+### store
+
+Contém o estado global usado na comparação.
+
+### assets
+
+Contém as imagens usadas no app.
+
+---
+
+## Como rodar
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Rode o projeto:
+
+```bash
+npx expo start
+```
+
+Depois, abra no Expo Go, simulador iOS ou emulador Android.
+
+---
+
+## Dependências principais
+
+Caso precise instalar manualmente:
+
+```bash
+npm install axios @tanstack/react-query zustand lucide-react-native
+npx expo install @react-native-async-storage/async-storage
+npx expo install react-native-safe-area-context
+```
+
+---
+
+## O que foi implementado no MVP
+
+- Home com apresentação da solução;
+- listagem de veículos;
+- busca e filtro simples;
+- detalhe de veículo;
+- detalhe de versão;
+- especificações técnicas;
+- tela de comparação;
+- seleção de atributos;
+- resultado da comparação;
+- histórico local;
+- tela de perfil;
+- status da API/mock;
+- navegação por abas;
+- rotas dinâmicas;
+- gerenciamento de estado;
+- imagens para melhorar a interface.
+
+---
+
+## Requisitos atendidos
+
+| Requisito | Como foi atendido |
+|---|---|
+| App mobile | Feito com React Native e Expo |
+| Interface clara | Cards, abas, botões e imagens |
+| Navegação | Expo Router |
+| Consumo de API | Axios e TanStack Query |
+| Estado global | Zustand |
+| Armazenamento local | AsyncStorage |
+| Dados externos/mockados | API Java planejada + fallback mock |
+| Valor ao usuário | Comparação de veículos e análise de gaps |
+| Relação com a Ford | Inteligência competitiva automotiva |
+
+---
+
+## Melhorias futuras
+
+- login real;
+- comparação com mais concorrentes;
+- exportação de relatório;
+- gráficos mais avançados;
+- integração completa com a API final;
+- alertas de mercado;
+- revisão de qualidade dos dados;
+- permissões por usuário.
+
+---
+
+## Conclusão
+
+O **Ford SpecPulse Mobile** é uma versão MVP de um app para inteligência competitiva automotiva.
+
+Ele permite explorar veículos, visualizar versões, comparar atributos técnicos e entender de forma simples onde a Ford possui vantagens ou pontos que precisam de atenção.
+
+A proposta foi criar um app simples, funcional, visualmente organizado e conectado ao contexto do desafio da Ford.
