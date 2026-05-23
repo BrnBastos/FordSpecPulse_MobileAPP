@@ -18,12 +18,16 @@ O projeto foi criado com base no desafio da Ford sobre **inteligência competiti
 
 ### Acesso para avaliação
 
-Professor, para conseguir acessar todas as opções do app, utilize o acesso de administrador:
+> **ATENÇÃO, PROFESSOR:** use obrigatoriamente o acesso de administrador abaixo para avaliar o app completo.
+>
+> Sem esse login, algumas ações ficam bloqueadas pela API, principalmente a criação de comparações.
+
+Para conseguir acessar todas as opções do app, utilize o acesso de administrador:
 
 - **Login:** admin@ford.internal
 - **Senha:** admin123
 
-Contas com permissões menores podem acessar apenas parte do fluxo, porque a criação de comparações é limitada pela API backend em Java.
+Contas com permissões menores podem acessar apenas parte do fluxo, porque a criação de comparações é limitada pela API backend em Java que desenvolvemos.
 
 ---
 
