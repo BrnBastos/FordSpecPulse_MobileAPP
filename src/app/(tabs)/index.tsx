@@ -3,75 +3,136 @@ import { router } from "expo-router";
 import { ArrowRight, BarChart3, Car, ShieldCheck } from "lucide-react-native";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    AppCard,
-    LoadingState,
-    PageTitle,
-    PrimaryButton,
-    ScreenContainer,
-    SecondaryButton,
-    SectionTitle,
+  AppCard,
+  LoadingState,
+  PageTitle,
+  PrimaryButton,
+  ScreenContainer,
+  SecondaryButton,
+  SectionTitle,
 } from "../../components/SpecPulseUI";
 import { colors, spacing } from "../../constants/specpulseTheme";
-import { getMe } from "../../services/specpulseApi";
+import {
+  getAttributesFromApi,
+  getMeFromApi,
+  getVehiclesFromApi,
+} from "../../services/specpulseApi";
 
 export default function HomeScreen() {
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["me"],
-    queryFn: getMe,
+  const { data: user, isLoading: loadingUser, isError: userError } = useQuery({
+    queryKey: ["me", "api-only"],
+    queryFn: getMeFromApi,
   });
+
+  const {
+    data: vehicles,
+    isLoading: loadingVehicles,
+    isError: vehiclesError,
+  } = useQuery({
+    queryKey: ["vehicles", "api-only"],
+    queryFn: getVehiclesFromApi,
+  });
+
+  const {
+    data: attributes,
+    isLoading: loadingAttributes,
+    isError: attributesError,
+  } = useQuery({
+    queryKey: ["attributes", "api-only"],
+    queryFn: getAttributesFromApi,
+  });
+
+  const isLoading = loadingUser || loadingVehicles || loadingAttributes;
 
   if (isLoading) {
     return (
       <ScreenContainer>
-        <LoadingState label="Carregando experiência SpecPulse..." />
+        <LoadingState label="Carregando resumo..." />
       </ScreenContainer>
     );
   }
+
+  const realVehicles = vehicles ?? [];
+  const realAttributes = attributes ?? [];
+  const fordVehicles = realVehicles.filter(
+    (vehicle) => vehicle.brandName?.toLowerCase() === "ford"
+  );
+  const competitorVehicles = realVehicles.length - fordVehicles.length;
+  const hasDataError = userError || vehiclesError || attributesError;
+  const metricValue = (value: number) => (hasDataError ? "--" : String(value));
+  const firstName = user?.name ? user.name.split(" ")[0] : "Analista";
 
   return (
     <ScreenContainer>
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageTitle
           eyebrow="Ford SpecPulse Mobile"
-          title={`Olá, ${user?.name?.split(" ")[0] ?? "Analista"}`}
-          subtitle="Compare versões, identifique gaps competitivos e transforme especificações técnicas em decisões estratégicas."
+          title={`Ola, ${firstName}`}
+          subtitle="Compare versoes, identifique gaps competitivos e transforme especificacoes tecnicas em decisoes estrategicas."
         />
 
         <AppCard style={styles.hero}>
-            <Image
-                source={require("../../../assets/images/specpulse-hero.png")}
-                style={styles.heroImage}
-                resizeMode="contain"
+          <Image
+            source={require("../../../assets/images/specpulse-hero.png")}
+            style={styles.heroImage}
+            resizeMode="contain"
+          />
+
+          <Text style={styles.heroTitle}>
+            Inteligencia competitiva na palma da mao
+          </Text>
+
+          <Text style={styles.heroText}>
+            Selecione uma versao Ford, compare com concorrentes e visualize
+            vantagens, riscos e confianca dos dados.
+          </Text>
+
+          <View style={styles.buttonStack}>
+            <PrimaryButton
+              label="Criar comparacao"
+              onPress={() => router.push("/compare")}
             />
-
-            <Text style={styles.heroTitle}>
-                Inteligência competitiva na palma da mão
-            </Text>
-
-            <Text style={styles.heroText}>
-                Selecione uma versão Ford, compare com concorrentes e visualize vantagens,
-                riscos e confiança dos dados.
-            </Text>
-
-            <View style={styles.buttonStack}>
-                <PrimaryButton
-                label="Criar comparação"
-                onPress={() => router.push("/compare")}
-                />
-                <SecondaryButton
-                label="Explorar veículos"
-                onPress={() => router.push("/vehicles")}
-                />
-            </View>
+            <SecondaryButton
+              label="Explorar veiculos"
+              onPress={() => router.push("/vehicles")}
+            />
+          </View>
         </AppCard>
 
-        <SectionTitle>Resumo rápido</SectionTitle>
+        <SectionTitle>Resumo rapido</SectionTitle>
+
+        {hasDataError ? (
+          <AppCard style={styles.errorCard}>
+            <Text style={styles.errorTitle}>
+              Nao foi possivel carregar o resumo real
+            </Text>
+            <Text style={styles.errorText}>
+              Verifique a sessao e os endpoints de veiculos e atributos.
+            </Text>
+          </AppCard>
+        ) : null}
 
         <View style={styles.metricsGrid}>
-          <Metric icon={<Car size={22} color={colors.fordBlue} />} value="3" label="Veículos" />
-          <Metric icon={<BarChart3 size={22} color={colors.fordBlue} />} value="5" label="Atributos" />
-          <Metric icon={<ShieldCheck size={22} color={colors.success} />} value="82%" label="Confiança" />
-          <Metric icon={<ArrowRight size={22} color={colors.warning} />} value="2" label="Gaps" />
+          <Metric
+            icon={<Car size={22} color={colors.fordBlue} />}
+            value={metricValue(realVehicles.length)}
+            label="Veiculos"
+          />
+          <Metric
+            icon={<BarChart3 size={22} color={colors.fordBlue} />}
+            value={metricValue(realAttributes.length)}
+            label="Atributos"
+          />
+          <Metric
+            icon={<ShieldCheck size={22} color={colors.success} />}
+            value={metricValue(fordVehicles.length)}
+            label="Ford"
+          />
+          <Metric
+            icon={<ArrowRight size={22} color={colors.warning} />}
+            value={metricValue(competitorVehicles)}
+            label="Concorrentes"
+          />
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -97,22 +158,13 @@ function Metric({
 }
 
 const styles = StyleSheet.create({
-    heroImage: {
-  width: "100%",
-  height: 180,
-  marginBottom: spacing.md,
-},
-  hero: {
-    backgroundColor: colors.navy,
+  heroImage: {
+    width: "100%",
+    height: 180,
     marginBottom: spacing.md,
   },
-  heroIcon: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: colors.fordBlue,
-    alignItems: "center",
-    justifyContent: "center",
+  hero: {
+    backgroundColor: colors.navy,
     marginBottom: spacing.md,
   },
   heroTitle: {
@@ -129,6 +181,22 @@ const styles = StyleSheet.create({
   buttonStack: {
     gap: spacing.sm,
     marginTop: spacing.lg,
+  },
+  errorCard: {
+    backgroundColor: "#FEECEC",
+    borderColor: "#F8C7C7",
+    marginBottom: spacing.sm,
+  },
+  errorTitle: {
+    color: colors.danger,
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  errorText: {
+    color: colors.graphite,
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 6,
   },
   metricsGrid: {
     flexDirection: "row",

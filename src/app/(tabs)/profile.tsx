@@ -1,37 +1,65 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Activity, Server, ShieldCheck, UserRound } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    AppCard,
-    Badge,
-    LoadingState,
-    PageTitle,
-    ScreenContainer,
-    SectionTitle,
+  AppCard,
+  Badge,
+  LoadingState,
+  PageTitle,
+  ScreenContainer,
+  SectionTitle,
 } from "../../components/SpecPulseUI";
 import { colors, spacing } from "../../constants/specpulseTheme";
-import { getApiStatus, getMe } from "../../services/specpulseApi";
+import {
+  getApiStatus,
+  getMeFromApi,
+  getStoredAuthSession,
+  logout,
+} from "../../services/specpulseApi";
 
 export default function ProfileScreen() {
-  const { data: user, isLoading: loadingUser } = useQuery({
-    queryKey: ["me"],
-    queryFn: getMe,
-  });
+  const queryClient = useQueryClient();
+
+  const refreshApiQueries = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["auth-session"] });
+    await queryClient.invalidateQueries({ queryKey: ["me"] });
+    await queryClient.invalidateQueries({ queryKey: ["api-status"] });
+    await queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+    await queryClient.invalidateQueries({ queryKey: ["versions"] });
+    await queryClient.invalidateQueries({ queryKey: ["version"] });
+    await queryClient.invalidateQueries({ queryKey: ["version-specifications"] });
+    await queryClient.invalidateQueries({ queryKey: ["attributes"] });
+  };
 
   const { data: apiStatus, isLoading: loadingStatus } = useQuery({
     queryKey: ["api-status"],
     queryFn: getApiStatus,
   });
 
-  if (loadingUser || loadingStatus) {
+  const { data: authSession } = useQuery({
+    queryKey: ["auth-session"],
+    queryFn: getStoredAuthSession,
+  });
+
+  const { data: user, isLoading: loadingUser } = useQuery({
+    queryKey: ["me", "api-only"],
+    queryFn: getMeFromApi,
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess: refreshApiQueries,
+  });
+
+  if (loadingStatus || loadingUser) {
     return (
       <ScreenContainer>
-        <LoadingState label="Verificando sessão e API..." />
+        <LoadingState label="Verificando sessao..." />
       </ScreenContainer>
     );
   }
 
-  const isApiMode = apiStatus?.mode === "api";
+  const displayUser = user ?? authSession?.user;
 
   return (
     <ScreenContainer>
@@ -39,7 +67,7 @@ export default function ProfileScreen() {
         <PageTitle
           eyebrow="Profile"
           title="Perfil e API"
-          subtitle="Status da sessão, permissões e integração com a API externa."
+          subtitle="Status da sessao, permissoes e integracao com a API externa."
         />
 
         <AppCard style={styles.profileCard}>
@@ -47,40 +75,34 @@ export default function ProfileScreen() {
             <UserRound color={colors.white} size={30} />
           </View>
 
-          <Text style={styles.name}>{user?.name ?? "Usuário demo"}</Text>
-          <Text style={styles.email}>{user?.email ?? "demo@ford.internal"}</Text>
+          <Text style={styles.name}>{displayUser?.name ?? "Usuario"}</Text>
+          <Text style={styles.email}>
+            {displayUser?.email ?? "Sessao autenticada"}
+          </Text>
 
           <View style={styles.roles}>
-            {(user?.roles ?? ["analyst"]).map((role) => (
+            {(displayUser?.roles ?? []).map((role) => (
               <Badge key={role} label={role} tone="blue" />
             ))}
           </View>
         </AppCard>
 
-        <SectionTitle>Status da integração</SectionTitle>
+        <SectionTitle>Status da integracao</SectionTitle>
 
         <AppCard>
           <View style={styles.statusHeader}>
             <View style={styles.statusIcon}>
-              <Server color={isApiMode ? colors.success : colors.warning} size={24} />
+              <Server color={colors.success} size={24} />
             </View>
 
             <View style={{ flex: 1 }}>
-              <Text style={styles.statusTitle}>
-                {isApiMode ? "API conectada" : "Modo demonstração"}
-              </Text>
-
+              <Text style={styles.statusTitle}>API conectada</Text>
               <Text style={styles.statusText}>
-                {isApiMode
-                  ? "O app está consumindo dados da API externa."
-                  : "A API não respondeu. O app está usando dados mockados compatíveis com o contrato."}
+                O app esta consumindo dados da API externa com Bearer token.
               </Text>
             </View>
 
-            <Badge
-              label={isApiMode ? "online" : "mock"}
-              tone={isApiMode ? "green" : "yellow"}
-            />
+            <Badge label="online" tone="green" />
           </View>
 
           <View style={styles.infoBox}>
@@ -89,42 +111,70 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Última verificação</Text>
+            <Text style={styles.infoLabel}>Auth</Text>
+            <Text style={styles.infoValue}>token valido</Text>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.infoLabel}>Ultima verificacao</Text>
             <Text style={styles.infoValue}>
               {apiStatus?.checkedAt
                 ? new Date(apiStatus.checkedAt).toLocaleString()
-                : "Não informado"}
+                : "Nao informado"}
             </Text>
           </View>
         </AppCard>
 
-        <SectionTitle>Entrega técnica</SectionTitle>
+        <SectionTitle>Sessao</SectionTitle>
+
+        <AppCard>
+          <Text style={styles.authTitle}>Sessao autenticada</Text>
+          <Text style={styles.authText}>
+            As proximas chamadas usam Authorization: Bearer token.
+          </Text>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.infoLabel}>Usuario autenticado</Text>
+            <Text style={styles.infoValue}>
+              {authSession?.user.email ?? displayUser?.email ?? "Sessao ativa"}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+            style={styles.logoutButton}
+          >
+            <Text style={styles.logoutText}>
+              {logoutMutation.isPending ? "Saindo..." : "Sair da sessao"}
+            </Text>
+          </Pressable>
+        </AppCard>
+
+        <SectionTitle>Entrega tecnica</SectionTitle>
 
         <View style={styles.grid}>
-          <TechItem icon={<Activity color={colors.fordBlue} size={22} />} title="Expo Router" text="Navegação por tabs e rotas dinâmicas." />
-          <TechItem icon={<Server color={colors.fordBlue} size={22} />} title="API REST" text="Consumo assíncrono com Axios e TanStack Query." />
-          <TechItem icon={<ShieldCheck color={colors.fordBlue} size={22} />} title="Estado" text="Zustand para seleção da comparação." />
-          <TechItem icon={<UserRound color={colors.fordBlue} size={22} />} title="Local data" text="AsyncStorage para histórico local." />
+          <TechItem
+            icon={<Activity color={colors.fordBlue} size={22} />}
+            title="Expo Router"
+            text="Rotas protegidas por sessao autenticada."
+          />
+          <TechItem
+            icon={<Server color={colors.fordBlue} size={22} />}
+            title="API REST"
+            text="Consumo assincrono com Axios e TanStack Query."
+          />
+          <TechItem
+            icon={<ShieldCheck color={colors.fordBlue} size={22} />}
+            title="Auth"
+            text="Login, cadastro e refresh token com AsyncStorage."
+          />
+          <TechItem
+            icon={<UserRound color={colors.fordBlue} size={22} />}
+            title="Perfil"
+            text="Dados do usuario autenticado via API."
+          />
         </View>
-
-
-        <SectionTitle>Sobre a solução</SectionTitle>
-
-        <AppCard style={styles.aboutCard}>
-        <Text style={styles.aboutTitle}>Ford SpecPulse Mobile</Text>
-
-        <Text style={styles.aboutText}>
-            O app transforma dados técnicos de veículos em uma experiência mobile de
-            comparação competitiva. A proposta é ajudar times de produto, pricing e
-            estratégia a identificar vantagens, gaps e oportunidades de posicionamento.
-        </Text>
-
-        <Text style={styles.aboutText}>
-            Nesta versão MVP, o foco está no fluxo principal: explorar veículos,
-            selecionar versões, comparar atributos e visualizar um resumo estratégico.
-        </Text>
-        </AppCard>
-        
       </ScrollView>
     </ScreenContainer>
   );
@@ -149,23 +199,27 @@ function TechItem({
 }
 
 const styles = StyleSheet.create({
-    aboutCard: {
-    marginBottom: 40,
-    },
-
-    aboutTitle: {
+  authTitle: {
     color: colors.navy,
     fontSize: 18,
     fontWeight: "900",
-    marginBottom: spacing.sm,
-    },
-
-    aboutText: {
-    color: colors.graphite,
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 8,
-    },
+  },
+  authText: {
+    color: colors.gray,
+    lineHeight: 20,
+    marginTop: 6,
+  },
+  logoutButton: {
+    alignItems: "center",
+    backgroundColor: "#FEECEC",
+    borderRadius: 14,
+    marginTop: spacing.md,
+    paddingVertical: 14,
+  },
+  logoutText: {
+    color: colors.danger,
+    fontWeight: "900",
+  },
   profileCard: {
     alignItems: "center",
   },
@@ -182,11 +236,13 @@ const styles = StyleSheet.create({
     color: colors.navy,
     fontSize: 22,
     fontWeight: "900",
+    textAlign: "center",
   },
   email: {
     color: colors.gray,
     marginTop: 4,
     fontWeight: "600",
+    textAlign: "center",
   },
   roles: {
     flexDirection: "row",

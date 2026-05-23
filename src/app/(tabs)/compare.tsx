@@ -15,8 +15,8 @@ import {
 import { colors, spacing } from "../../constants/specpulseTheme";
 import {
   createComparison,
-  getAttributes,
-  getVehicles,
+  getAttributesFromApi,
+  getVehiclesFromApi,
   getVehicleVersions,
   TechnicalAttribute,
   VehicleVersion,
@@ -36,7 +36,7 @@ export default function CompareScreen() {
 
   const { data: vehicles, isLoading: loadingVehicles } = useQuery({
     queryKey: ["vehicles"],
-    queryFn: getVehicles,
+    queryFn: getVehiclesFromApi,
   });
 
   const fordVehicle = vehicles?.find((item) => item.brandName === "Ford");
@@ -56,7 +56,7 @@ export default function CompareScreen() {
 
   const { data: attributes, isLoading: loadingAttributes } = useQuery({
     queryKey: ["attributes"],
-    queryFn: getAttributes,
+    queryFn: getAttributesFromApi,
   });
 
   const mutation = useMutation({
@@ -143,6 +143,15 @@ export default function CompareScreen() {
             Atributos: {selectedAttributeIds.length}
           </Text>
         </AppCard>
+
+        {mutation.error ? (
+          <AppCard style={styles.errorCard}>
+            <Text style={styles.errorTitle}>Nao foi possivel gerar a comparacao</Text>
+            <Text style={styles.errorText}>
+              {messageForComparisonError(mutation.error)}
+            </Text>
+          </AppCard>
+        ) : null}
 
         <View style={styles.footer}>
           <PrimaryButton
@@ -239,6 +248,23 @@ function AttributeChip({
   );
 }
 
+function messageForComparisonError(error: unknown) {
+  const status =
+    typeof error === "object" && error !== null && "response" in error
+      ? (error as { response?: { status?: number } }).response?.status
+      : undefined;
+
+  if (status === 403) {
+    return "Seu usuario autenticado nao tem permissao para POST /comparacoes. Use uma conta com perfil ANALISTA, GERENTE ou ADMIN, ou ajuste a permissao na API.";
+  }
+
+  if (status === 401) {
+    return "Sessao expirada. Saia e entre novamente.";
+  }
+
+  return "A API recusou a chamada. Confira a sessao, as versoes selecionadas e os atributos.";
+}
+
 const styles = StyleSheet.create({
     imageCard: {
   marginBottom: spacing.md,
@@ -326,6 +352,22 @@ imageCardText: {
     color: colors.graphite,
     fontWeight: "700",
     marginTop: 4,
+  },
+  errorCard: {
+    backgroundColor: "#FEECEC",
+    borderColor: "#F8C7C7",
+    marginTop: spacing.md,
+  },
+  errorTitle: {
+    color: colors.danger,
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  errorText: {
+    color: colors.graphite,
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 6,
   },
   footer: {
     marginTop: spacing.lg,

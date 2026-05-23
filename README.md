@@ -160,7 +160,7 @@ O app foi preparado para consumir uma API externa em Java.
 URL base usada no projeto:
 
 ```txt
-http://localhost:8080/api
+https://ford-spec-pulse-api-production.up.railway.app/api
 ```
 
 Endpoints principais usados:

@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   View,
@@ -13,7 +14,7 @@ import { colors, radius, spacing } from "../constants/specpulseTheme";
 
 type CardProps = {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 

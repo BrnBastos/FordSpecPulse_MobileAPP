@@ -1,12 +1,15 @@
 import { create } from "zustand";
+import { ComparisonResult } from "../services/specpulseApi";
 
 type ComparisonState = {
   fordVersionId: string | null;
   competitorVersionId: string | null;
   selectedAttributeIds: string[];
+  currentComparison: ComparisonResult | null;
   setFordVersionId: (id: string) => void;
   setCompetitorVersionId: (id: string) => void;
   toggleAttribute: (id: string) => void;
+  setCurrentComparison: (comparison: ComparisonResult) => void;
   reset: () => void;
 };
 
@@ -14,6 +17,7 @@ export const useComparisonStore = create<ComparisonState>((set) => ({
   fordVersionId: null,
   competitorVersionId: null,
   selectedAttributeIds: [],
+  currentComparison: null,
 
   setFordVersionId: (id) => set({ fordVersionId: id }),
 
@@ -26,10 +30,13 @@ export const useComparisonStore = create<ComparisonState>((set) => ({
         : [...state.selectedAttributeIds, id],
     })),
 
+  setCurrentComparison: (comparison) => set({ currentComparison: comparison }),
+
   reset: () =>
     set({
       fordVersionId: null,
       competitorVersionId: null,
       selectedAttributeIds: [],
+      currentComparison: null,
     }),
 }));
