@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { LockKeyhole, Mail, UserRound } from "lucide-react-native";
 import { useState } from "react";
@@ -11,24 +11,13 @@ import {
   SecondaryButton,
 } from "../components/SpecPulseUI";
 import { colors, spacing } from "../constants/specpulseTheme";
+import { errorMessage } from "../services/errors";
 import { register } from "../services/specpulseApi";
 
 export default function RegisterScreen() {
-  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const refreshApiQueries = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["auth-session"] });
-    await queryClient.invalidateQueries({ queryKey: ["me"] });
-    await queryClient.invalidateQueries({ queryKey: ["api-status"] });
-    await queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-    await queryClient.invalidateQueries({ queryKey: ["versions"] });
-    await queryClient.invalidateQueries({ queryKey: ["version"] });
-    await queryClient.invalidateQueries({ queryKey: ["version-specifications"] });
-    await queryClient.invalidateQueries({ queryKey: ["attributes"] });
-  };
 
   const registerMutation = useMutation({
     mutationFn: () =>
@@ -37,25 +26,25 @@ export default function RegisterScreen() {
         email: email.trim(),
         senha: password,
       }),
-    onSuccess: async () => {
-      await refreshApiQueries();
-      router.replace("/");
-    },
   });
 
   const canSubmit =
     !!name.trim() &&
-    !!email.trim() &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) &&
     !!password &&
     !registerMutation.isPending;
 
   return (
     <ScreenContainer>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
         <PageTitle
-          eyebrow="Autenticacao"
+          eyebrow="Acesso"
           title="Criar cadastro"
-          subtitle="O cadastro envia nome, email e senha para /auth/register."
+          subtitle="Crie sua conta. As ações disponíveis dependem do perfil de acesso."
         />
 
         <AppCard>
@@ -64,6 +53,7 @@ export default function RegisterScreen() {
             <View style={styles.inputRow}>
               <UserRound color={colors.gray} size={20} />
               <TextInput
+                accessibilityLabel="Nome"
                 value={name}
                 onChangeText={setName}
                 placeholder="Ana Estrategista"
@@ -79,6 +69,7 @@ export default function RegisterScreen() {
             <View style={styles.inputRow}>
               <Mail color={colors.gray} size={20} />
               <TextInput
+                accessibilityLabel="E-mail"
                 value={email}
                 onChangeText={setEmail}
                 placeholder="ana@ford.internal"
@@ -96,9 +87,10 @@ export default function RegisterScreen() {
             <View style={styles.inputRow}>
               <LockKeyhole color={colors.gray} size={20} />
               <TextInput
+                accessibilityLabel="Senha"
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Senha@Forte123"
+                placeholder="Sua senha"
                 secureTextEntry
                 style={styles.input}
                 placeholderTextColor={colors.gray}
@@ -108,10 +100,14 @@ export default function RegisterScreen() {
 
           {registerMutation.error ? (
             <Text style={styles.errorText}>
-              Nao foi possivel criar o cadastro. Confira os dados e a API.
+              {errorMessage(registerMutation.error)}
             </Text>
           ) : null}
 
+          {email.length > 0 &&
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) && (
+              <Text style={styles.errorText}>Informe um e-mail válido.</Text>
+            )}
           <View style={styles.actions}>
             <PrimaryButton
               label={
@@ -121,7 +117,7 @@ export default function RegisterScreen() {
               onPress={() => registerMutation.mutate()}
             />
             <SecondaryButton
-              label="Ja tenho conta"
+              label="Já tenho conta"
               onPress={() => router.push("/login")}
             />
           </View>
@@ -138,7 +134,7 @@ const styles = StyleSheet.create({
   label: {
     color: colors.navy,
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "600",
     marginBottom: 8,
   },
   inputRow: {

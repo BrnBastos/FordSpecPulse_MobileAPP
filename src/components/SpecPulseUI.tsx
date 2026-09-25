@@ -1,6 +1,8 @@
 import React from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Image,
   Pressable,
   StyleProp,
@@ -17,11 +19,15 @@ type CardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-
 export function ScreenContainer({ children }: CardProps) {
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.safeArea}>
-      <View style={styles.screen}>{children}</View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.screen}
+      >
+        {children}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -64,6 +70,8 @@ export function PrimaryButton({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       style={({ pressed }) => [
         styles.primaryButton,
@@ -106,7 +114,9 @@ export function Badge({
   }[tone];
 
   return (
-    <View style={[styles.badge, { backgroundColor: toneStyle.backgroundColor }]}>
+    <View
+      style={[styles.badge, { backgroundColor: toneStyle.backgroundColor }]}
+    >
       <Text style={[styles.badgeText, { color: toneStyle.color }]}>
         {label}
       </Text>
@@ -146,23 +156,28 @@ export function EmptyState({
 
 export function ErrorState({
   message = "Não foi possível carregar os dados.",
+  onRetry,
 }: {
   message?: string;
+  onRetry?: () => void;
 }) {
   return (
     <AppCard>
-      <Text style={styles.errorTitle}>Erro</Text>
+      <Text style={styles.errorTitle}>Não foi possível concluir</Text>
       <Text style={styles.stateText}>{message}</Text>
+      {onRetry ? (
+        <SecondaryButton label="Tentar novamente" onPress={onRetry} />
+      ) : null}
     </AppCard>
   );
 }
 
 const styles = StyleSheet.create({
   emptyImage: {
-  width: "100%",
-  height: 120,
-  marginBottom: spacing.sm,
-},
+    width: "100%",
+    height: 120,
+    marginBottom: spacing.sm,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -179,10 +194,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E7ECF3",
     shadowColor: "#001F54",
-    shadowOpacity: 0.06,
+    shadowOpacity: 0,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
-    elevation: 2,
+    elevation: 0,
   },
   titleBlock: {
     marginBottom: spacing.md,
@@ -190,7 +205,7 @@ const styles = StyleSheet.create({
   eyebrow: {
     color: colors.fordBlue,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "600",
     letterSpacing: 1.4,
     textTransform: "uppercase",
     marginBottom: 6,
@@ -198,7 +213,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     color: colors.navy,
     fontSize: 28,
-    fontWeight: "900",
+    fontWeight: "600",
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -210,13 +225,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: colors.navy,
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: "600",
     marginBottom: spacing.sm,
     marginTop: spacing.md,
   },
   primaryButton: {
     backgroundColor: colors.fordBlue,
     borderRadius: radius.md,
+    minHeight: 48,
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
@@ -226,19 +242,20 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: colors.white,
-    fontWeight: "800",
+    fontWeight: "600",
     fontSize: 15,
   },
   secondaryButton: {
     backgroundColor: colors.lightBlue,
     borderRadius: radius.md,
+    minHeight: 48,
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   secondaryButtonText: {
     color: colors.fordBlue,
-    fontWeight: "800",
+    fontWeight: "600",
     fontSize: 15,
   },
   badge: {
@@ -249,7 +266,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "600",
   },
   centerState: {
     padding: spacing.lg,
@@ -264,12 +281,12 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.navy,
-    fontWeight: "800",
+    fontWeight: "600",
     fontSize: 16,
   },
   errorTitle: {
     color: colors.danger,
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 16,
   },
 });

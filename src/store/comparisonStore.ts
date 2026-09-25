@@ -6,8 +6,8 @@ type ComparisonState = {
   competitorVersionId: string | null;
   selectedAttributeIds: string[];
   currentComparison: ComparisonResult | null;
-  setFordVersionId: (id: string) => void;
-  setCompetitorVersionId: (id: string) => void;
+  setFordVersionId: (id: string | null) => void;
+  setCompetitorVersionId: (id: string | null) => void;
   toggleAttribute: (id: string) => void;
   setCurrentComparison: (comparison: ComparisonResult) => void;
   reset: () => void;
@@ -19,12 +19,14 @@ export const useComparisonStore = create<ComparisonState>((set) => ({
   selectedAttributeIds: [],
   currentComparison: null,
 
-  setFordVersionId: (id) => set({ fordVersionId: id }),
+  setFordVersionId: (id) => set({ fordVersionId: id, currentComparison: null }),
 
-  setCompetitorVersionId: (id) => set({ competitorVersionId: id }),
+  setCompetitorVersionId: (id) =>
+    set({ competitorVersionId: id, currentComparison: null }),
 
   toggleAttribute: (id) =>
     set((state) => ({
+      currentComparison: null,
       selectedAttributeIds: state.selectedAttributeIds.includes(id)
         ? state.selectedAttributeIds.filter((item) => item !== id)
         : [...state.selectedAttributeIds, id],

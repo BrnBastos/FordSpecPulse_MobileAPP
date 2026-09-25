@@ -1,35 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
+import { ArrowLeft, Car, ChevronRight, Fuel, Gauge } from "lucide-react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    ArrowLeft,
-    Car,
-    ChevronRight,
-    Fuel,
-    Gauge
-} from "lucide-react-native";
-import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
-import {
-    AppCard,
-    Badge,
-    EmptyState,
-    LoadingState,
-    PageTitle,
-    PrimaryButton,
-    ScreenContainer,
-    SectionTitle,
+  AppCard,
+  Badge,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PageTitle,
+  PrimaryButton,
+  ScreenContainer,
+  SectionTitle,
 } from "../../components/SpecPulseUI";
+import { segmentLabel, powertrainLabel } from "../../components/Selection";
 import { colors, spacing } from "../../constants/specpulseTheme";
 import {
-    getVehicleById,
-    getVehicleVersions,
-    VehicleVersion,
+  getVehicleById,
+  getVehicleVersions,
+  VehicleVersion,
 } from "../../services/specpulseApi";
+import { errorMessage } from "../../services/errors";
 import { useComparisonStore } from "../../store/comparisonStore";
 
 export default function VehicleDetailScreen() {
@@ -41,6 +32,8 @@ export default function VehicleDetailScreen() {
   const {
     data: vehicle,
     isLoading: loadingVehicle,
+    error: vehicleError,
+    refetch: refetchVehicle,
   } = useQuery({
     queryKey: ["vehicle", vehicleId],
     queryFn: () => getVehicleById(vehicleId),
@@ -50,8 +43,10 @@ export default function VehicleDetailScreen() {
   const {
     data: versions,
     isLoading: loadingVersions,
+    error: versionsError,
+    refetch: refetchVersions,
   } = useQuery({
-    queryKey: ["vehicle-versions", vehicleId],
+    queryKey: ["versions", vehicleId],
     queryFn: () => getVehicleVersions(vehicleId),
     enabled: !!vehicleId,
   });
@@ -59,7 +54,7 @@ export default function VehicleDetailScreen() {
   const isLoading = loadingVehicle || loadingVersions;
   const isFord = vehicle?.brandName?.toLowerCase() === "ford";
 
-  function useVersionForCompare(version: VehicleVersion) {
+  function selectVersionForCompare(version: VehicleVersion) {
     if (isFord) {
       setFordVersionId(version.id);
     } else {
@@ -77,13 +72,27 @@ export default function VehicleDetailScreen() {
     );
   }
 
+  if (vehicleError || versionsError)
+    return (
+      <ScreenContainer>
+        <BackButton />
+        <ErrorState
+          message={errorMessage(vehicleError ?? versionsError)}
+          onRetry={() => {
+            void refetchVehicle();
+            void refetchVersions();
+          }}
+        />
+      </ScreenContainer>
+    );
+
   if (!vehicle) {
     return (
       <ScreenContainer>
         <BackButton />
         <EmptyState
           title="Veículo não encontrado"
-          message="A API não retornou dados para este veículo."
+          message="Não há dados para este veículo."
         />
       </ScreenContainer>
     );
@@ -95,7 +104,7 @@ export default function VehicleDetailScreen() {
         <BackButton />
 
         <PageTitle
-          eyebrow="Vehicle Detail"
+          eyebrow="Veículo"
           title={`${vehicle.brandName ?? vehicle.brandId} ${vehicle.model}`}
           subtitle="Veja as versões disponíveis e escolha uma para analisar ou usar na comparação."
         />
@@ -115,10 +124,13 @@ export default function VehicleDetailScreen() {
           <Text style={styles.heroTitle}>{vehicle.model}</Text>
 
           <View style={styles.metaGrid}>
-            <MetaItem label="Marca" value={vehicle.brandName ?? vehicle.brandId} />
+            <MetaItem
+              label="Marca"
+              value={vehicle.brandName ?? vehicle.brandId}
+            />
             <MetaItem label="Mercado" value={vehicle.market} />
             <MetaItem label="Ano" value={String(vehicle.year)} />
-            <MetaItem label="Segmento" value={formatSegment(vehicle.segment)} />
+            <MetaItem label="Segmento" value={segmentLabel(vehicle.segment)} />
           </View>
         </AppCard>
 
@@ -127,7 +139,7 @@ export default function VehicleDetailScreen() {
         {!versions?.length ? (
           <EmptyState
             title="Nenhuma versão encontrada"
-            message="Este veículo ainda não possui versões cadastradas na API."
+            message="Este veículo ainda não possui versões cadastradas."
           />
         ) : (
           <View style={styles.versionList}>
@@ -136,8 +148,13 @@ export default function VehicleDetailScreen() {
                 key={version.id}
                 version={version}
                 isFord={isFord}
-                onOpen={() => router.push(`/version/${version.id}` as never)}
-                onUseForCompare={() => useVersionForCompare(version)}
+                onOpen={() =>
+                  router.push({
+                    pathname: "/version/[id]",
+                    params: { id: version.id },
+                  })
+                }
+                onUseForCompare={() => selectVersionForCompare(version)}
               />
             ))}
           </View>
@@ -176,8 +193,6 @@ function VersionCard({
   onOpen: () => void;
   onUseForCompare: () => void;
 }) {
-  const completeness = Math.round(version.dataCompleteness * 100);
-
   return (
     <AppCard>
       <Pressable onPress={onOpen}>
@@ -188,7 +203,9 @@ function VersionCard({
             <View style={styles.versionMetaRow}>
               <View style={styles.versionMetaItem}>
                 <Fuel color={colors.gray} size={15} />
-                <Text style={styles.versionMetaText}>{version.powertrain}</Text>
+                <Text style={styles.versionMetaText}>
+                  {powertrainLabel(version.powertrain ?? "Não informado")}
+                </Text>
               </View>
 
               <View style={styles.versionMetaItem}>
@@ -203,10 +220,9 @@ function VersionCard({
 
         <View style={styles.badgeRow}>
           <Badge
-            label={`${completeness}% completo`}
-            tone={completeness >= 90 ? "green" : completeness >= 75 ? "yellow" : "red"}
+            label={formatVersionLevel(version.versionLevel)}
+            tone="neutral"
           />
-          <Badge label={formatVersionLevel(version.versionLevel)} tone="neutral" />
         </View>
       </Pressable>
 
@@ -218,10 +234,6 @@ function VersionCard({
       </View>
     </AppCard>
   );
-}
-
-function formatSegment(segment: string) {
-  return segment.replaceAll("_", " ");
 }
 
 function formatVersionLevel(level: string) {
@@ -241,7 +253,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: colors.fordBlue,
-    fontWeight: "800",
+    fontWeight: "600",
   },
   heroCard: {
     backgroundColor: colors.navy,
@@ -262,7 +274,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     color: colors.white,
     fontSize: 30,
-    fontWeight: "900",
+    fontWeight: "600",
     marginTop: spacing.lg,
     marginBottom: spacing.md,
   },
@@ -280,13 +292,13 @@ const styles = StyleSheet.create({
   metaLabel: {
     color: "#BFD5F6",
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "600",
     marginBottom: 4,
   },
   metaValue: {
     color: colors.white,
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "600",
     textTransform: "capitalize",
   },
   versionList: {
@@ -300,7 +312,7 @@ const styles = StyleSheet.create({
   versionName: {
     color: colors.navy,
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   versionMetaRow: {
     flexDirection: "row",

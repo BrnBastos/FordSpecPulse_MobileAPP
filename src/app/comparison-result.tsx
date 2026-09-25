@@ -1,4 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { categoryLabel } from "../components/Selection";
+import { statusLabel } from "../services/specifications";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { saveAnalysis } from "../services/history";
+import { errorMessage } from "../services/errors";
 import { router } from "expo-router";
 import { ArrowLeft, CheckCircle2, TriangleAlert } from "lucide-react-native";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -6,6 +11,8 @@ import {
   AppCard,
   Badge,
   EmptyState,
+  ErrorState,
+  SecondaryButton,
   PageTitle,
   PrimaryButton,
   ScreenContainer,
@@ -17,16 +24,12 @@ import { useComparisonStore } from "../store/comparisonStore";
 export default function ComparisonResultScreen() {
   const { currentComparison } = useComparisonStore();
 
-  async function saveResult() {
-    if (!currentComparison) return;
-
-    await AsyncStorage.setItem(
-      "lastComparison",
-      JSON.stringify(currentComparison)
-    );
-
-    router.push("/history");
-  }
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const [differencesOnly, setDifferencesOnly] = useState(false);
+  const save = useMutation({
+    mutationFn: saveAnalysis,
+    onSuccess: () => router.push("/history"),
+  });
 
   if (!currentComparison) {
     return (
@@ -58,18 +61,22 @@ export default function ComparisonResultScreen() {
         <PageTitle
           eyebrow="Resultado"
           title="Comparação gerada"
-          subtitle="Resumo executivo, vantagens, gaps e matriz simplificada de atributos."
+          subtitle={`${data.fordLabel ?? "Ford"} × ${data.competitorLabel ?? "Concorrente"}`}
         />
 
         <AppCard style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>Confiança da análise</Text>
-          <Text style={styles.scoreValue}>
-            {Math.round(data.summary.confidence * 100)}%
-          </Text>
+          <Text style={styles.scoreLabel}>Resumo da análise</Text>
           <Text style={styles.scoreText}>{data.summary.executiveSummary}</Text>
         </AppCard>
 
-        <SectionTitle>Vantagens Ford</SectionTitle>
+        <Text style={{ marginTop: 12 }}>
+          Consulta realizada em{" "}
+          {data.createdAt
+            ? new Date(data.createdAt).toLocaleString("pt-BR")
+            : "data não informada"}
+          . Este resultado não é atualizado automaticamente.
+        </Text>
+        <SectionTitle>Vantagens apontadas pelo serviço</SectionTitle>
 
         <View style={styles.list}>
           {data.summary.keyAdvantages.map((item) => (
@@ -80,7 +87,7 @@ export default function ComparisonResultScreen() {
           ))}
         </View>
 
-        <SectionTitle>Gaps e riscos</SectionTitle>
+        <SectionTitle>Pontos de atenção</SectionTitle>
 
         <View style={styles.list}>
           {data.summary.keyGaps.map((item) => (
@@ -93,35 +100,93 @@ export default function ComparisonResultScreen() {
 
         <SectionTitle>Matriz de atributos</SectionTitle>
 
+        <SecondaryButton
+          label={
+            differencesOnly
+              ? "Mostrar todos os atributos"
+              : "Somente diferenças"
+          }
+          onPress={() => setDifferencesOnly(!differencesOnly)}
+        />
         <View style={styles.list}>
-          {data.rows.map((row) => (
-            <AppCard key={row.attributeId}>
-              <View style={styles.rowHeader}>
-                <Text style={styles.attributeName}>{row.attributeName}</Text>
+          {data.rows
+            .filter((row) => !differencesOnly || row.difference !== "parity")
+            .map((row) => (
+              <AppCard key={row.attributeId}>
+                <Text style={{ marginBottom: 8 }}>
+                  {categoryLabel(row.category ?? "others")}
+                </Text>
+                <View style={styles.rowHeader}>
+                  <Text style={styles.attributeName}>{row.attributeName}</Text>
 
-                <Badge
-                  label={labelForDifference(row.difference)}
-                  tone={toneForDifference(row.difference)}
-                />
-              </View>
-
-              <View style={styles.compareValues}>
-                <View style={styles.valueBox}>
-                  <Text style={styles.valueLabel}>Ford</Text>
-                  <Text style={styles.value}>{row.fordValue}</Text>
+                  <Badge
+                    label={labelForDifference(row.difference)}
+                    tone={toneForDifference(row.difference)}
+                  />
                 </View>
 
-                <View style={styles.valueBox}>
-                  <Text style={styles.valueLabel}>Concorrente</Text>
-                  <Text style={styles.value}>{row.competitorValue}</Text>
-                </View>
-              </View>
+                <View style={styles.compareValues}>
+                  <View style={styles.valueBox}>
+                    <Text style={styles.valueLabel}>
+                      {data.fordLabel ?? "Ford"}
+                    </Text>
+                    <Text style={styles.value}>{row.fordValue}</Text>
+                    <Text>
+                      {row.fordSpec
+                        ? statusLabel[row.fordSpec.status]
+                        : "Estado não informado"}
+                    </Text>
+                  </View>
 
-              <Text style={styles.confidence}>
-                Confiança: {row.confidenceLevel}
-              </Text>
-            </AppCard>
-          ))}
+                  <View style={styles.valueBox}>
+                    <Text style={styles.valueLabel}>
+                      {data.competitorLabel ?? "Concorrente"}
+                    </Text>
+                    <Text style={styles.value}>{row.competitorValue}</Text>
+                    <Text>
+                      {row.competitorSpec
+                        ? statusLabel[row.competitorSpec.status]
+                        : "Estado não informado"}
+                    </Text>
+                  </View>
+                </View>
+
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{
+                    expanded: expanded.includes(row.attributeId),
+                  }}
+                  style={{ minHeight: 48, justifyContent: "center" }}
+                  onPress={() =>
+                    setExpanded(
+                      expanded.includes(row.attributeId)
+                        ? expanded.filter((id) => id !== row.attributeId)
+                        : [...expanded, row.attributeId],
+                    )
+                  }
+                >
+                  <Text>Fontes e observações</Text>
+                </Pressable>
+                {expanded.includes(row.attributeId) && (
+                  <Text>
+                    Ford: {row.fordSpec?.sourceLabel ?? "fonte não informada"}
+                    {"\n"}
+                    {row.fordSpec?.sourceUrl}
+                    {"\n"}Coleta: {row.fordSpec?.collectedAt ?? "não informada"}
+                    {"\n"}
+                    {row.fordSpec?.notes}
+                    {"\n"}Concorrente:{" "}
+                    {row.competitorSpec?.sourceLabel ?? "fonte não informada"}
+                    {"\n"}
+                    {row.competitorSpec?.sourceUrl}
+                    {"\n"}Coleta:{" "}
+                    {row.competitorSpec?.collectedAt ?? "não informada"}
+                    {"\n"}
+                    {row.competitorSpec?.notes}
+                  </Text>
+                )}
+              </AppCard>
+            ))}
         </View>
 
         {data.summary.validationWarnings.length ? (
@@ -137,7 +202,12 @@ export default function ComparisonResultScreen() {
         ) : null}
 
         <View style={styles.footer}>
-          <PrimaryButton label="Salvar comparação local" onPress={saveResult} />
+          {save.error && <ErrorState message={errorMessage(save.error)} />}
+          <PrimaryButton
+            label={save.isPending ? "Salvando..." : "Salvar análise"}
+            disabled={save.isPending}
+            onPress={() => save.mutate(data)}
+          />
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -176,19 +246,19 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: colors.fordBlue,
-    fontWeight: "800",
+    fontWeight: "600",
   },
   scoreCard: {
     backgroundColor: colors.navy,
   },
   scoreLabel: {
     color: "#D8E7FF",
-    fontWeight: "800",
+    fontWeight: "600",
   },
   scoreValue: {
     color: colors.white,
     fontSize: 44,
-    fontWeight: "900",
+    fontWeight: "600",
     marginTop: 4,
   },
   scoreText: {
@@ -221,7 +291,7 @@ const styles = StyleSheet.create({
   attributeName: {
     color: colors.navy,
     fontSize: 17,
-    fontWeight: "900",
+    fontWeight: "600",
     flex: 1,
   },
   compareValues: {
@@ -237,13 +307,13 @@ const styles = StyleSheet.create({
   valueLabel: {
     color: colors.gray,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "600",
     marginBottom: 4,
   },
   value: {
     color: colors.graphite,
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   confidence: {
     color: colors.gray,

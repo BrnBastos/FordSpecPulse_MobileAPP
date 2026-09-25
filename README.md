@@ -1,10 +1,8 @@
-# Ford SpecPulse Mobile
+# Ford SpecPulse
 
-Aplicativo mobile desenvolvido para a sprint de **Mobile Development and IoT**, usando **React Native com Expo**.
+Ferramenta de inteligência competitiva automotiva para consultar fichas técnicas e comparar uma versão Ford com uma concorrente. Desafio 01 — Ford FIAP 2026; Sprint 3 de **Mobile Development and IoT**.
 
-O projeto foi criado com base no desafio da Ford sobre **inteligência competitiva automotiva**. A ideia é ter um app simples e funcional para comparar veículos Ford com concorrentes, mostrando versões, atributos técnicos, vantagens, gaps e um resumo da análise.
-
----
+**Situação:** implementação em validação. A API Render responde; faltam integração de atributos livres, paginação completa, validação autenticada, conferência da Ranger Raptor e novo APK com a URL Render. Consulte também [a revisão de 25/09](docs/revisao-sprint-3.md). Consulte [a matriz da sprint](docs/sprint-3.md) e [os resultados de QA](docs/qa-sprint-3.md).
 
 ## Integrantes
 
@@ -16,389 +14,81 @@ O projeto foi criado com base no desafio da Ford sobre **inteligência competiti
 | Bruno Silva | 550416 |
 | João Hoffmann | 550763 |
 
-### Acesso para avaliação
+## Executar
 
-> **ATENÇÃO, PROFESSOR:** use obrigatoriamente o acesso de administrador abaixo para avaliar o app completo.
->
-> Sem esse login, algumas ações ficam bloqueadas pela API, principalmente a criação de comparações.
-
-Para conseguir acessar todas as opções do app, utilize o acesso de administrador:
-
-- **Login:** admin@ford.internal
-- **Senha:** admin123
-
-Contas com permissões menores podem acessar apenas parte do fluxo, porque a criação de comparações é limitada pela API backend em Java que desenvolvemos.
-
----
-
-## Sobre o projeto
-
-O **Ford SpecPulse Mobile** é um app pensado para ajudar na comparação de veículos e versões do mercado automotivo.
-
-Comparar carros pode ser difícil porque cada montadora usa nomes diferentes para recursos parecidos, e algumas informações aparecem incompletas. Por isso, o app organiza esses dados de forma mais clara.
-
-Com ele, o usuário consegue escolher uma versão Ford, escolher uma versão concorrente, selecionar atributos técnicos e gerar uma comparação com resumo, vantagens e pontos de atenção.
-
----
-
-## Objetivo
-
-O objetivo do app é transformar dados técnicos de veículos em uma análise simples e útil.
-
-O foco não é apenas mostrar uma ficha técnica, mas ajudar o usuário a entender onde a Ford tem vantagem, onde existem gaps e quais dados ainda precisam de validação.
-
----
-
-## Tecnologias usadas
-
-- React Native
-- Expo SDK 56
-- Expo Router
-- TypeScript
-- Axios
-- TanStack Query
-- Zustand
-- AsyncStorage
-- Lucide React Native
-- React Native SVG
-
----
-
-## Principais funcionalidades
-
-### Autenticação
-
-O app possui login, cadastro, logout e rotas protegidas. Depois do login, as chamadas para a API usam token Bearer, com refresh token salvo localmente via **AsyncStorage**.
-
----
-
-### Home
-
-Tela inicial do app. Ela apresenta a proposta da solução e dá acesso rápido para explorar veículos ou criar uma comparação.
-
----
-
-### Veículos
-
-Tela onde o usuário consegue ver os veículos disponíveis.
-
-Funcionalidades:
-
-- listar veículos Ford e concorrentes;
-- buscar por marca ou modelo;
-- filtrar entre todos, Ford ou concorrentes;
-- abrir os detalhes de um veículo.
-
----
-
-### Detalhe do veículo
-
-Mostra as informações principais do veículo selecionado, como marca, modelo, ano, mercado, segmento e versões disponíveis.
-
-Cada versão aparece em um card com informações como motorização, tração, nível da versão e completude dos dados.
-
----
-
-### Detalhe da versão
-
-Mostra as especificações técnicas de uma versão.
-
-Cada especificação pode ter um status:
-
-| Status | Significado |
-|---|---|
-| Encontrado | A informação foi encontrada |
-| Não disponível | Existe indicação de que o item não está disponível |
-| Não informado | A fonte não confirma se existe ou não |
-| Conflito | Existem informações divergentes |
-| Validação pendente | O dado precisa ser revisado |
-
-Um ponto importante é que o app não trata “não informado” como “não existe”. Isso evita conclusões erradas na comparação.
-
----
-
-### Comparação
-
-Essa é a parte principal do app.
-
-O usuário escolhe:
-
-1. uma versão Ford;
-2. uma versão concorrente;
-3. os atributos técnicos que quer comparar.
-
-Depois disso, o app gera uma comparação com base nos dados selecionados.
-
----
-
-### Resultado da comparação
-
-Mostra o resultado da análise feita pelo app.
-
-A tela apresenta:
-
-- confiança da análise;
-- resumo executivo;
-- vantagens da Ford;
-- gaps e riscos;
-- matriz simples dos atributos comparados;
-- alertas de validação.
-
-A ideia é que o resultado seja fácil de entender, mesmo sem olhar apenas para uma tabela técnica.
-
----
-
-### Histórico
-
-A tela de histórico salva a última comparação feita pelo usuário.
-
-Essa parte usa **AsyncStorage**, então o dado fica salvo localmente no dispositivo.
-
-O usuário pode visualizar a última comparação ou limpar o histórico.
-
----
-
-### Perfil e status da API
-
-Mostra informações do usuário e o status da integração com a API.
-
-A tela exibe:
-
-- nome do usuário;
-- e-mail;
-- permissões;
-- URL da API;
-- status da autenticação;
-- tecnologias principais usadas no projeto.
-
----
-
-## Integração com API
-
-O app foi preparado para consumir uma API externa em Java.
-
-URL base usada no projeto:
-
-```txt
-https://ford-spec-pulse-api-production.up.railway.app/api
-```
-
-Endpoints principais usados:
-
-```txt
-POST /api/auth/login
-POST /api/auth/register
-POST /api/auth/refresh
-POST /api/auth/logout
-GET /api/usuarios/me
-GET /api/veiculos
-GET /api/veiculos/:id/versoes
-GET /api/versoes/:id/especificacoes
-GET /api/atributos/taxonomia
-POST /api/comparacoes
-```
-
-A URL pode ser alterada pela variável de ambiente `EXPO_PUBLIC_API_BASE_URL`.
-
-Durante o desenvolvimento, alguns serviços mantiveram dados mockados como apoio. Para acessar todas as opções na versão atual, principalmente criar comparações, é necessário autenticar na API real com uma conta que tenha permissão.
-
----
-
-## Fluxo principal do app
-
-```txt
-Login
-→ Home
-→ Veículos
-→ Detalhe do veículo
-→ Detalhe da versão
-→ Comparar
-→ Resultado
-→ Histórico
-```
-
-Passo a passo:
-
-1. O usuário abre o app e faz login.
-2. Acessa a aba de veículos.
-3. Escolhe um veículo.
-4. Visualiza as versões.
-5. Abre uma versão para ver detalhes.
-6. Vai para a tela de comparação.
-7. Escolhe uma versão Ford.
-8. Escolhe uma versão concorrente.
-9. Seleciona os atributos.
-10. Gera a comparação.
-11. Visualiza o resultado.
-12. Salva no histórico.
-
----
-
-## Estrutura do projeto
-
-```txt
-app/
-  _layout.tsx
-  login.tsx
-  register.tsx
-  (tabs)/
-    _layout.tsx
-    index.tsx
-    vehicles.tsx
-    compare.tsx
-    history.tsx
-    profile.tsx
-  vehicle/
-    [id].tsx
-  version/
-    [id].tsx
-  comparison-result.tsx
-
-assets/
-  images/
-    specpulse-hero.png
-    comparison-illustration.png
-    empty-data.png
-
-components/
-  SpecPulseUI.tsx
-
-constants/
-  specpulseTheme.ts
-
-services/
-  specpulseApi.ts
-
-store/
-  comparisonStore.ts
-```
-
----
-
-## Explicando as pastas
-
-### app
-
-Contém as telas e rotas do aplicativo.
-
-### components
-
-Contém componentes reutilizáveis, como cards, botões, badges e estados de loading/vazio.
-
-### constants
-
-Contém cores, espaçamentos e padrões visuais.
-
-### services
-
-Contém a comunicação com a API.
-
-### store
-
-Contém o estado global usado na comparação.
-
-### assets
-
-Contém as imagens usadas no app.
-
----
-
-## Como rodar
-
-Instale as dependências:
+Node 20.19+ (validado com 20.20.2), npm e Android SDK/emulador ou dispositivo para validação nativa.
 
 ```bash
-npm install
+npm ci
+cp .env.example .env.local
+npm start
 ```
 
-Rode o projeto:
+`npm run android` abre o fluxo de desenvolvimento Expo; não gera o APK final. A variável `EXPO_PUBLIC_API_BASE_URL` é pública e contém apenas a URL HTTPS do serviço. Nunca inserir segredos nela.
 
 ```bash
-npx expo start
+npm run typecheck
+npm run lint
+npm test
+npx expo install --check
+npx expo-doctor
+npx expo export --platform android --output-dir dist/android
 ```
 
-Depois, abra no Expo Go, simulador iOS ou emulador Android.
+O lockfile fixa a instalação. A stack preserva Expo 56.0.4, React Native 0.85.3, React 19.2.3, Expo Router 56.2.6, TypeScript 6.0.3, TanStack Query, Axios e Zustand. Tokens nativos usam Expo SecureStore; histórico usa AsyncStorage. Há avisos conhecidos do Expo Doctor documentados em QA; não foi feita migração ampla de SDK.
 
-Também existem scripts por plataforma:
+## Uso
+
+1. Entrar com conta de avaliação fornecida em canal privado pela equipe.
+2. Em **Veículos**, buscar marca/modelo, abrir uma versão e escolher os atributos da ficha.
+3. Em **Comparar**, selecionar marca, modelo/ano/mercado e versão Ford; repetir para a concorrente.
+4. Selecionar atributos por categoria e gerar a comparação.
+5. Consultar os dois valores por atributo, estados e fontes disponíveis; filtrar diferenças.
+6. Salvar e reabrir pelo Histórico; excluir uma análise ou limpar a coleção com confirmação.
+7. Abrir **Meu perfil** no Início para sair.
+
+A API decide as permissões. Um 403 informa restrição de perfil e não é contornado. Cadastro não garante permissão de comparação. Nenhuma credencial administrativa permanente é publicada neste README; a equipe deve fornecer uma conta apropriada ao avaliador.
+
+## Dados e limitações
+
+Base atual: `https://ford-spec-pulse-api.onrender.com/api`.
+
+[Contrato e extensão proposta](docs/contrato-api.md) descrevem endpoints, payload e dependências. Falhas de rede não produzem mocks. O app separa erros de resposta vazia e oferece nova tentativa. Tokens nativos migrados do AsyncStorage são removidos dali após armazenamento seguro; no web, sessão fica apenas em memória.
+
+`0` e `false` são valores válidos. “Não informado” não significa ausência confirmada. Conflito e validação pendente permanecem explícitos. Unidades diferentes não produzem uma vantagem calculada no cliente. Sem fonte/data/critério de confiança fornecido, o app não inventa metadados nem percentuais.
+
+A ficha individual reutiliza a taxonomia para manter ordem, nomes e categorias consistentes. A pesquisa livre fora dessa taxonomia **não está integrada**: o contrato individual já está publicado, mas falta conectá-lo ao mobile; a comparação livre também segue pendente. A UI informa essa limitação ao não encontrar um atributo. Células de comparação sem identidade de versão são rejeitadas até que o contrato de ordem seja comprovado.
+
+O histórico guarda snapshots versionados, com data, seleção e nomes de versões, separados por usuário. Não é sincronizado remotamente. O registro global legado `lastComparison` não é atribuído a nenhuma conta, pois sua autoria é desconhecida. Arquivos inválidos geram erro recuperável e opção de limpeza.
+
+[Validação Ranger Raptor](docs/validacao-ranger-raptor.md): referência complementar e consulta real pendentes. Uma referência oficial provisória não equivale à aprovação do caso.
+
+## APK de release
 
 ```bash
-npm run android
-npm run ios
-npm run web
+npx eas-cli build --platform android --profile sprint3
 ```
 
-O script Android usa o comportamento padrão do Expo.
+Projeto [bbastos/FordSpecPulse_Mobile](https://expo.dev/accounts/bbastos/projects/FordSpecPulse_Mobile), pacote `com.brnbastos.fordspecpulse`, versão 1.1.0 / versionCode 2. Perfil `sprint3`: distribuição interna, APK, sem development client. A build embarca o bundle e deve iniciar sem Metro/Expo Go. Credenciais de assinatura são gerenciadas pelo EAS.
 
----
+[Baixar APK anterior 1.1.0 (Railway)](https://expo.dev/artifacts/eas/dya-EUsGruyITWRiJCgos_F4zR6_hPlEK6NBXQkKpkI.apk) — instalado e iniciado no Android 16 sem Metro/Expo Go. **Este APK usa a URL Railway antiga e não corresponde à configuração Render atual; é necessário gerar e instalar uma nova build.** Identificação da build, checksum e evidências estão em [QA](docs/qa-sprint-3.md). Build concluída não equivale à validação dos fluxos autenticados.
 
-## Dependências principais
+## Estrutura
 
-Caso precise instalar manualmente:
-
-```bash
-npm install axios @tanstack/react-query zustand lucide-react-native
-npx expo install @react-native-async-storage/async-storage
-npx expo install react-native-safe-area-context
-npx expo install react-native-svg
+```text
+src/app/                 Rotas, autenticação, catálogo, comparação e histórico
+src/components/          Componentes compartilhados e seletores
+src/constants/           Tokens visuais
+src/services/auth.ts     Sessão, SecureStore, cliente HTTP e refresh
+src/services/adapters.ts Normalização de especificações/comparação
+src/services/history.ts  Persistência por usuário
+src/services/specpulseApi.ts  Serviços de domínio e validação
+src/store/               Estado da seleção e resultado atual
+tests/                   Testes comportamentais, fixtures isoladas
+docs/                    Matriz, contrato, validação e QA
+assets/images/           Assets do produto
 ```
 
----
+## Demonstração
 
-## O que foi implementado no MVP
-
-- Home com apresentação da solução;
-- login e cadastro reais;
-- rotas protegidas por sessão autenticada;
-- refresh token e logout;
-- listagem de veículos;
-- busca e filtro simples;
-- detalhe de veículo;
-- detalhe de versão;
-- especificações técnicas;
-- tela de comparação;
-- seleção de atributos;
-- resultado da comparação;
-- histórico local;
-- tela de perfil;
-- status da API e autenticação;
-- navegação por abas;
-- rotas dinâmicas;
-- gerenciamento de estado;
-- imagens para melhorar a interface.
-
----
-
-## Requisitos atendidos
-
-| Requisito | Como foi atendido |
-|---|---|
-| App mobile | Feito com React Native e Expo |
-| Interface clara | Cards, abas, botões e imagens |
-| Navegação | Expo Router com rotas protegidas |
-| Consumo de API | Axios, TanStack Query e Bearer token |
-| Estado global | Zustand |
-| Armazenamento local | AsyncStorage |
-| Dados externos | API Java publicada no Railway |
-| Valor ao usuário | Comparação de veículos e análise de gaps |
-| Relação com a Ford | Inteligência competitiva automotiva |
-
----
-
-## Melhorias futuras
-
-- comparação com mais concorrentes;
-- exportação de relatório;
-- gráficos mais avançados;
-- alertas de mercado;
-- revisão de qualidade dos dados;
-- refinamento das permissões por usuário.
-
----
-
-## Conclusão
-
-O **Ford SpecPulse Mobile** é uma versão MVP de um app para inteligência competitiva automotiva.
-
-Ele permite explorar veículos, visualizar versões, comparar atributos técnicos e entender de forma simples onde a Ford possui vantagens ou pontos que precisam de atenção.
-
-A proposta foi criar um app simples, funcional, visualmente organizado e conectado ao contexto do desafio da Ford.
+Roteiro: abrir APK → entrar → consultar Ranger Raptor exata → escolher atributos → selecionar concorrente → comparar → ver fontes/diferenças → salvar → reabrir Histórico → sair. Demonstrar também vazio, rede indisponível e permissão negada. Capturas reais e limitações estão na [galeria](docs/screenshots/README.md). O vídeo de até seis minutos é exigência da Sprint 4; a demonstração das telas permanece parte da Sprint 3.

@@ -3,29 +3,32 @@ import { router } from "expo-router";
 import { Search } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import {
-    AppCard,
-    Badge,
-    EmptyState,
-    LoadingState,
-    PageTitle,
-    ScreenContainer,
+  AppCard,
+  Badge,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PageTitle,
+  ScreenContainer,
 } from "../../components/SpecPulseUI";
+import { segmentLabel } from "../../components/Selection";
 import { colors, spacing } from "../../constants/specpulseTheme";
+import { errorMessage } from "../../services/errors";
 import { getVehicles, Vehicle } from "../../services/specpulseApi";
 
 export default function VehiclesScreen() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "ford" | "competitors">("all");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["vehicles"],
     queryFn: getVehicles,
   });
@@ -57,11 +60,23 @@ export default function VehiclesScreen() {
     );
   }
 
+  if (error)
+    return (
+      <ScreenContainer>
+        <ErrorState
+          message={errorMessage(error)}
+          onRetry={() => {
+            void refetch();
+          }}
+        />
+      </ScreenContainer>
+    );
+
   return (
     <ScreenContainer>
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageTitle
-          eyebrow="Vehicle Explorer"
+          eyebrow="Catálogo"
           title="Veículos"
           subtitle="Explore modelos Ford e concorrentes disponíveis para comparação competitiva."
         />
@@ -78,8 +93,16 @@ export default function VehiclesScreen() {
         </View>
 
         <View style={styles.filters}>
-          <FilterChip label="Todos" active={filter === "all"} onPress={() => setFilter("all")} />
-          <FilterChip label="Ford" active={filter === "ford"} onPress={() => setFilter("ford")} />
+          <FilterChip
+            label="Todos"
+            active={filter === "all"}
+            onPress={() => setFilter("all")}
+          />
+          <FilterChip
+            label="Ford"
+            active={filter === "ford"}
+            onPress={() => setFilter("ford")}
+          />
           <FilterChip
             label="Concorrentes"
             active={filter === "competitors"}
@@ -129,18 +152,27 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const isFord = vehicle.brandName?.toLowerCase() === "ford";
 
   return (
-    <Pressable onPress={() => router.push(`/vehicle/${vehicle.id}` as never)}>
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: "/vehicle/[id]", params: { id: vehicle.id } })
+      }
+    >
       <AppCard>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={styles.brand}>{vehicle.brandName ?? vehicle.brandId}</Text>
+            <Text style={styles.brand}>
+              {vehicle.brandName ?? vehicle.brandId}
+            </Text>
             <Text style={styles.model}>{vehicle.model}</Text>
           </View>
-          <Badge label={isFord ? "Ford" : "Concorrente"} tone={isFord ? "blue" : "neutral"} />
+          <Badge
+            label={isFord ? "Ford" : "Concorrente"}
+            tone={isFord ? "blue" : "neutral"}
+          />
         </View>
 
         <View style={styles.metaRow}>
-          <Text style={styles.meta}>{vehicle.segment}</Text>
+          <Text style={styles.meta}>{segmentLabel(vehicle.segment)}</Text>
           <Text style={styles.dot}>•</Text>
           <Text style={styles.meta}>{vehicle.market}</Text>
           <Text style={styles.dot}>•</Text>
@@ -189,7 +221,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     color: colors.gray,
-    fontWeight: "800",
+    fontWeight: "600",
     fontSize: 13,
   },
   filterTextActive: {
@@ -206,12 +238,12 @@ const styles = StyleSheet.create({
   },
   brand: {
     color: colors.gray,
-    fontWeight: "800",
+    fontWeight: "600",
     fontSize: 13,
   },
   model: {
     color: colors.navy,
-    fontWeight: "900",
+    fontWeight: "600",
     fontSize: 22,
     marginTop: 2,
   },

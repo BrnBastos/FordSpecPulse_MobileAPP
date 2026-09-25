@@ -1,11 +1,5 @@
 import { Tabs } from "expo-router";
-import {
-  Car,
-  Clock3,
-  GitCompareArrows,
-  Home,
-  UserRound,
-} from "lucide-react-native";
+import { Car, Clock3, GitCompareArrows, Home } from "lucide-react-native";
 import { colors } from "../../constants/specpulseTheme";
 
 export default function TabLayout() {
@@ -18,7 +12,6 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.white,
           borderTopColor: "#E7ECF3",
-          height: 74,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
@@ -30,7 +23,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Início",
           tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
@@ -61,7 +54,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Perfil",
-          tabBarIcon: ({ color }) => <UserRound size={22} color={color} />,
+          href: null,
         }}
       />
     </Tabs>

@@ -1,103 +1,112 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "expo-router";
-import { Trash2 } from "lucide-react-native";
-import { useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback } from "react";
+import { Alert, ScrollView, Text, View } from "react-native";
 import {
-    AppCard,
-    EmptyState,
-    PageTitle,
-    ScreenContainer,
-    SectionTitle,
+  AppCard,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PageTitle,
+  ScreenContainer,
+  SecondaryButton,
 } from "../../components/SpecPulseUI";
-import { colors, spacing } from "../../constants/specpulseTheme";
-import { ComparisonResult } from "../../services/specpulseApi";
-
+import {
+  clearHistory,
+  deleteAnalysis,
+  readHistory,
+} from "../../services/history";
+import { errorMessage } from "../../services/errors";
+import { useComparisonStore } from "../../store/comparisonStore";
 export default function HistoryScreen() {
-  const [lastComparison, setLastComparison] = useState<ComparisonResult | null>(
-    null
-  );
-
-  async function loadHistory() {
-    const raw = await AsyncStorage.getItem("lastComparison");
-    setLastComparison(raw ? JSON.parse(raw) : null);
-  }
-
-  async function clearHistory() {
-    await AsyncStorage.removeItem("lastComparison");
-    setLastComparison(null);
-  }
-
+  const client = useQueryClient();
+  const query = useQuery({ queryKey: ["history"], queryFn: readHistory });
   useFocusEffect(
     useCallback(() => {
-      loadHistory();
-    }, [])
+      void client.invalidateQueries({ queryKey: ["history"] });
+    }, [client]),
   );
-
+  const mutation = useMutation({
+    mutationFn: (id: string | null) =>
+      id ? deleteAnalysis(id) : clearHistory(),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["history"] }),
+  });
   return (
     <ScreenContainer>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 32 }}>
         <PageTitle
-          eyebrow="Histórico"
           title="Análises salvas"
-          subtitle="Histórico local simples para demonstrar armazenamento no dispositivo."
+          subtitle="Resultados guardados nesta conta e neste dispositivo."
         />
-
-        {!lastComparison ? (
-          <EmptyState
-            title="Nenhuma comparação salva"
-            message="Gere uma comparação e toque em salvar para ela aparecer aqui."
+        {query.isLoading && <LoadingState />}
+        {(query.error || mutation.error) && (
+          <ErrorState
+            message={errorMessage(query.error ?? mutation.error)}
+            onRetry={() => {
+              void query.refetch();
+            }}
           />
-        ) : (
+        )}
+        {!query.isLoading && !query.error && !query.data?.length && (
           <>
-            <SectionTitle>Última comparação</SectionTitle>
-
-            <AppCard>
-              <Text style={styles.title}>Comparação #{lastComparison.id}</Text>
-              <Text style={styles.summary}>
-                {lastComparison.summary.executiveSummary}
-              </Text>
-
-              <Text style={styles.confidence}>
-                Confiança: {Math.round(lastComparison.summary.confidence * 100)}%
-              </Text>
-
-              <Pressable onPress={clearHistory} style={styles.clearButton}>
-                <Trash2 color={colors.danger} size={18} />
-                <Text style={styles.clearText}>Limpar histórico local</Text>
-              </Pressable>
-            </AppCard>
+            <EmptyState
+              title="Nenhuma análise salva"
+              message="Gere uma comparação e salve o resultado para consultar depois."
+            />
+            <SecondaryButton
+              label="Nova comparação"
+              onPress={() => router.push("/compare")}
+            />
           </>
+        )}
+        {query.data?.map((item) => (
+          <AppCard key={item.id}>
+            <Text style={{ fontSize: 17, fontWeight: "600" }}>
+              {item.result.fordLabel} × {item.result.competitorLabel}
+            </Text>
+            <Text style={{ marginVertical: 12 }}>
+              Snapshot salvo em {new Date(item.savedAt).toLocaleString("pt-BR")}
+            </Text>
+            <Text>{item.result.summary.executiveSummary}</Text>
+            <View style={{ gap: 8, marginTop: 12 }}>
+              <SecondaryButton
+                label="Abrir análise"
+                onPress={() => {
+                  useComparisonStore
+                    .getState()
+                    .setCurrentComparison(item.result);
+                  router.push("/comparison-result");
+                }}
+              />
+              <SecondaryButton
+                label="Excluir análise"
+                onPress={() => {
+                  if (!mutation.isPending) mutation.mutate(item.id);
+                }}
+              />
+            </View>
+          </AppCard>
+        ))}
+        {!!(query.data?.length || query.error) && (
+          <SecondaryButton
+            label="Limpar histórico desta conta"
+            onPress={() =>
+              Alert.alert(
+                "Limpar histórico?",
+                "As análises salvas nesta conta serão excluídas deste dispositivo.",
+                [
+                  { text: "Cancelar", style: "cancel" },
+                  {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: () => mutation.mutate(null),
+                  },
+                ],
+              )
+            }
+          />
         )}
       </ScrollView>
     </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    color: colors.navy,
-    fontSize: 18,
-    fontWeight: "900",
-  },
-  summary: {
-    color: colors.graphite,
-    lineHeight: 21,
-    marginTop: spacing.sm,
-  },
-  confidence: {
-    color: colors.fordBlue,
-    fontWeight: "900",
-    marginTop: spacing.md,
-  },
-  clearButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginTop: spacing.lg,
-  },
-  clearText: {
-    color: colors.danger,
-    fontWeight: "800",
-  },
-});

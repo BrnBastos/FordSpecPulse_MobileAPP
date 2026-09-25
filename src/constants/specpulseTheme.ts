@@ -9,14 +9,14 @@ export const colors = {
   lightGray: "#E5E7EB",
   background: "#F3F6FA",
   white: "#FFFFFF",
-  success: "#15965A",
-  warning: "#F59E0B",
+  success: "#137744",
+  warning: "#925500",
   danger: "#DC2626",
 };
 
 export const spacing = {
-  xs: 6,
-  sm: 10,
+  xs: 4,
+  sm: 8,
   md: 16,
   lg: 24,
   xl: 32,

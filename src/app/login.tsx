@@ -1,15 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
+import { LockKeyhole, Mail } from "lucide-react-native";
 import { useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import {
   AppCard,
   PrimaryButton,
@@ -17,38 +10,24 @@ import {
   SecondaryButton,
 } from "../components/SpecPulseUI";
 import { colors, spacing } from "../constants/specpulseTheme";
+import { errorMessage } from "../services/errors";
 import { login } from "../services/specpulseApi";
 
 export default function LoginScreen() {
-  const queryClient = useQueryClient();
-  const [email, setEmail] = useState("bruno@ford.internal");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState<"email" | "password" | null>(
-    null
+    null,
   );
-
-  const refreshApiQueries = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["auth-session"] });
-    await queryClient.invalidateQueries({ queryKey: ["me"] });
-    await queryClient.invalidateQueries({ queryKey: ["api-status"] });
-    await queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-    await queryClient.invalidateQueries({ queryKey: ["versions"] });
-    await queryClient.invalidateQueries({ queryKey: ["version"] });
-    await queryClient.invalidateQueries({
-      queryKey: ["version-specifications"],
-    });
-    await queryClient.invalidateQueries({ queryKey: ["attributes"] });
-  };
 
   const loginMutation = useMutation({
     mutationFn: () => login({ email: email.trim(), senha: password }),
-    onSuccess: async () => {
-      await refreshApiQueries();
-      router.replace("/");
-    },
   });
 
-  const canSubmit = !!email.trim() && !!password && !loginMutation.isPending;
+  const canSubmit =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) &&
+    !!password &&
+    !loginMutation.isPending;
 
   return (
     <ScreenContainer>
@@ -58,21 +37,10 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         <AppCard style={styles.heroCard}>
-          <Image
-            source={require("../../assets/images/specpulse-hero.png")}
-            style={styles.heroImage}
-            resizeMode="cover"
-          />
-
           <View style={styles.heroOverlay}>
-            <View style={styles.badge}>
-              <ShieldCheck color={colors.white} size={16} />
-              <Text style={styles.badgeText}>Acesso seguro</Text>
-            </View>
-
             <Text style={styles.heroTitle}>Ford SpecPulse</Text>
             <Text style={styles.heroText}>
-              Inteligencia de especificacoes para comparar versoes com mais
+              Inteligência de especificações para comparar versões com mais
               clareza.
             </Text>
           </View>
@@ -82,7 +50,7 @@ export default function LoginScreen() {
           <View style={styles.formHeader}>
             <Text style={styles.formTitle}>Entrar na conta</Text>
             <Text style={styles.formSubtitle}>
-              Continue de onde parou e acesse os dados sincronizados da API.
+              Consulte fichas técnicas e compare versões.
             </Text>
           </View>
 
@@ -99,6 +67,7 @@ export default function LoginScreen() {
                 size={20}
               />
               <TextInput
+                accessibilityLabel="E-mail"
                 value={email}
                 onChangeText={setEmail}
                 placeholder="ana@ford.internal"
@@ -128,9 +97,10 @@ export default function LoginScreen() {
                 size={20}
               />
               <TextInput
+                accessibilityLabel="Senha"
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Senha@Forte123"
+                placeholder="Sua senha"
                 secureTextEntry
                 onBlur={() => setFocusedInput(null)}
                 onFocus={() => setFocusedInput("password")}
@@ -142,10 +112,17 @@ export default function LoginScreen() {
 
           {loginMutation.error ? (
             <Text style={styles.errorText}>
-              Nao foi possivel entrar. Confira email, senha e API.
+              {errorMessage(loginMutation.error) ===
+              "Sua sessão expirou. Entre novamente."
+                ? "E-mail ou senha inválidos."
+                : errorMessage(loginMutation.error)}
             </Text>
           ) : null}
 
+          {email.length > 0 &&
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) && (
+              <Text style={styles.errorText}>Informe um e-mail válido.</Text>
+            )}
           <View style={styles.actions}>
             <PrimaryButton
               label={loginMutation.isPending ? "Entrando..." : "Entrar"}
@@ -172,47 +149,21 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     backgroundColor: colors.navy,
-    minHeight: 260,
+    minHeight: 140,
     overflow: "hidden",
     padding: 0,
   },
-  heroImage: {
-    bottom: 0,
-    left: 0,
-    opacity: 0.9,
-    position: "absolute",
-    right: 0,
-    top: 0,
-  },
   heroOverlay: {
-    backgroundColor: "rgba(0, 31, 84, 0.54)",
+    backgroundColor: colors.navy,
     flex: 1,
     justifyContent: "flex-end",
-    minHeight: 260,
+    minHeight: 140,
     padding: spacing.lg,
-  },
-  badge: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(255, 255, 255, 0.18)",
-    borderColor: "rgba(255, 255, 255, 0.28)",
-    borderRadius: 999,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  badgeText: {
-    color: colors.white,
-    fontSize: 12,
-    fontWeight: "800",
   },
   heroTitle: {
     color: colors.white,
     fontSize: 30,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   heroText: {
     color: "#DCEBFF",
@@ -230,7 +181,7 @@ const styles = StyleSheet.create({
   formTitle: {
     color: colors.navy,
     fontSize: 22,
-    fontWeight: "900",
+    fontWeight: "600",
   },
   formSubtitle: {
     color: colors.gray,
@@ -245,7 +196,7 @@ const styles = StyleSheet.create({
   label: {
     color: colors.navy,
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "600",
     marginBottom: 8,
   },
   inputRow: {
