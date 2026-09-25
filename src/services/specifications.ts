@@ -5,6 +5,7 @@ export const statusLabel: Record<SpecValue["status"], string> = {
   not_informed: "Não informado",
   conflict: "Conflito",
   pending_validation: "Validação pendente",
+  unknown_attribute: "Atributo não reconhecido",
 };
 export function formatValue(value: SpecValue["value"], unit?: string | null) {
   if (value === null || value === undefined) return "Não informado";

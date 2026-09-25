@@ -1,7 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { ArrowLeft, Car, ChevronRight, Fuel, Gauge } from "lucide-react-native";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ArrowLeft, ChevronRight, Fuel, Gauge } from "lucide-react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   AppCard,
   Badge,
@@ -22,6 +29,8 @@ import {
 } from "../../services/specpulseApi";
 import { errorMessage } from "../../services/errors";
 import { useComparisonStore } from "../../store/comparisonStore";
+import { BrandLogo } from "../../components/AutomotiveImages";
+import { getVehiclePhoto } from "../../constants/automotiveAssets";
 
 export default function VehicleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -98,6 +107,8 @@ export default function VehicleDetailScreen() {
     );
   }
 
+  const photo = getVehiclePhoto(vehicle);
+
   return (
     <ScreenContainer>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -106,14 +117,12 @@ export default function VehicleDetailScreen() {
         <PageTitle
           eyebrow="Veículo"
           title={`${vehicle.brandName ?? vehicle.brandId} ${vehicle.model}`}
-          subtitle="Veja as versões disponíveis e escolha uma para analisar ou usar na comparação."
+          subtitle={`${vehicle.year} • ${vehicle.market} • ${segmentLabel(vehicle.segment)}`}
         />
 
         <AppCard style={styles.heroCard}>
           <View style={styles.heroTop}>
-            <View style={styles.iconBox}>
-              <Car color={colors.white} size={28} />
-            </View>
+            <BrandLogo name={vehicle.brandName ?? vehicle.brandId} />
 
             <Badge
               label={isFord ? "Veículo Ford" : "Concorrente"}
@@ -121,17 +130,31 @@ export default function VehicleDetailScreen() {
             />
           </View>
 
-          <Text style={styles.heroTitle}>{vehicle.model}</Text>
-
-          <View style={styles.metaGrid}>
-            <MetaItem
-              label="Marca"
-              value={vehicle.brandName ?? vehicle.brandId}
-            />
-            <MetaItem label="Mercado" value={vehicle.market} />
-            <MetaItem label="Ano" value={String(vehicle.year)} />
-            <MetaItem label="Segmento" value={segmentLabel(vehicle.segment)} />
-          </View>
+          {photo ? (
+            <>
+              <View
+                style={[
+                  styles.vehiclePhoto,
+                  {
+                    aspectRatio: photo.aspectRatio,
+                    maxWidth: 240 * photo.aspectRatio,
+                  },
+                ]}
+              >
+                <Image
+                  source={photo.source}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                  accessibilityLabel={`Ford ${vehicle.model}, imagem ilustrativa`}
+                />
+              </View>
+              <Text style={styles.photoCredit}>
+                {photo.credit} · Imagem ilustrativa
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.heroTitle}>{vehicle.model}</Text>
+          )}
         </AppCard>
 
         <SectionTitle>Versões disponíveis</SectionTitle>
@@ -170,15 +193,6 @@ function BackButton() {
       <ArrowLeft color={colors.fordBlue} size={20} />
       <Text style={styles.backText}>Voltar</Text>
     </Pressable>
-  );
-}
-
-function MetaItem({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.metaItem}>
-      <Text style={styles.metaLabel}>{label}</Text>
-      <Text style={styles.metaValue}>{value}</Text>
-    </View>
   );
 }
 
@@ -263,43 +277,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  iconBox: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: colors.fordBlue,
-    alignItems: "center",
-    justifyContent: "center",
+  vehiclePhoto: {
+    width: "100%",
+    maxHeight: 240,
+    alignSelf: "center",
+    borderRadius: 14,
+    overflow: "hidden",
+    marginTop: spacing.md,
   },
+  photoCredit: { color: "#BFD5F6", fontSize: 11, marginTop: 8 },
   heroTitle: {
     color: colors.white,
     fontSize: 30,
     fontWeight: "600",
     marginTop: spacing.lg,
     marginBottom: spacing.md,
-  },
-  metaGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
-  },
-  metaItem: {
-    width: "48%",
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: 16,
-    padding: spacing.sm,
-  },
-  metaLabel: {
-    color: "#BFD5F6",
-    fontSize: 12,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  metaValue: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: "600",
-    textTransform: "capitalize",
   },
   versionList: {
     gap: spacing.sm,

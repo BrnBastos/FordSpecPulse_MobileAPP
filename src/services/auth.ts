@@ -9,8 +9,10 @@ import axios, {
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const DEFAULT_API_BASE_URL =
-  "https://ford-spec-pulse-api.onrender.com/api";
+const DEFAULT_API_BASE_URL = "https://ford-spec-pulse-api.onrender.com/api";
+
+// Allow for the slower startup responses observed on the hosted API.
+const API_REQUEST_TIMEOUT_MS = 30_000;
 
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL;
@@ -52,7 +54,7 @@ export type RegisterInput = AuthCredentials & {
 
 export const api = create({
   baseURL: API_BASE_URL,
-  timeout: 6000,
+  timeout: API_REQUEST_TIMEOUT_MS,
 });
 
 type AuthResponse = {
@@ -238,7 +240,7 @@ async function refreshAccessToken(session: AuthSession) {
       .post<AuthResponse>(
         `${API_BASE_URL}/auth/refresh`,
         { refreshToken: session.refreshToken },
-        { timeout: 6000 },
+        { timeout: API_REQUEST_TIMEOUT_MS },
       )
       .then(async ({ data }) => {
         if (epoch !== generation) return null;
@@ -250,7 +252,7 @@ async function refreshAccessToken(session: AuthSession) {
         if (epoch !== generation) return null;
         if (
           isAxiosError(error) &&
-          [401, 403].includes(error.response?.status ?? 0)
+          [401, 403, 422].includes(error.response?.status ?? 0)
         ) {
           await clearAuthSession();
           return null;
@@ -287,10 +289,15 @@ async function getAccessToken(forceRefresh = false) {
 api.interceptors.request.use(async (config) => {
   (config as RetriableRequestConfig)._generation = generation;
   if (!hasAuthorizationHeader(config)) {
-    const token = await getAccessToken();
-
-    if (token) {
-      setAuthorizationHeader(config, token);
+    try {
+      const token = await getAccessToken();
+      if (token) {
+        setAuthorizationHeader(config, token);
+      }
+    } catch (error) {
+      if ((config as RetriableRequestConfig)._generation !== generation)
+        throw new CanceledError();
+      throw error;
     }
   }
 
@@ -308,6 +315,10 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
 
+    // Refresh uses its own client: preserve its errors rather than treating
+    // its untagged request as a response from a previous session.
+    if (originalRequest?._generation === undefined)
+      return Promise.reject(error);
     if (originalRequest && originalRequest._generation !== generation)
       return Promise.reject(new CanceledError());
     if (originalRequest?._retry && error.response?.status === 401)
@@ -345,7 +356,7 @@ export async function login(credentials: AuthCredentials) {
   const { data } = await axios.post<AuthResponse>(
     `${API_BASE_URL}/auth/login`,
     credentials,
-    { timeout: 6000 },
+    { timeout: API_REQUEST_TIMEOUT_MS },
   );
   if (epoch !== generation) throw new CanceledError();
   const session = sessionFromAuthResponse(data);
@@ -358,7 +369,7 @@ export async function register(input: RegisterInput) {
   const { data } = await axios.post<AuthResponse>(
     `${API_BASE_URL}/auth/register`,
     input,
-    { timeout: 6000 },
+    { timeout: API_REQUEST_TIMEOUT_MS },
   );
   if (epoch !== generation) throw new CanceledError();
   const session = sessionFromAuthResponse(data);
@@ -374,7 +385,10 @@ export async function logout() {
       await axios.post(
         `${API_BASE_URL}/auth/logout`,
         {},
-        { headers: { Authorization: `Bearer ${token}` }, timeout: 6000 },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: API_REQUEST_TIMEOUT_MS,
+        },
       );
     } catch {
       /* Local logout remains effective when revocation is unavailable. */

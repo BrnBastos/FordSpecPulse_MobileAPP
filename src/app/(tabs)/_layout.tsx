@@ -1,18 +1,27 @@
 import { Tabs } from "expo-router";
 import { Car, Clock3, GitCompareArrows, Home } from "lucide-react-native";
+import { useWindowDimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../constants/specpulseTheme";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+  const { fontScale } = useWindowDimensions();
+  const bottomPadding = Math.max(insets.bottom, 8);
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.fordBlue,
         tabBarInactiveTintColor: colors.gray,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: colors.white,
           borderTopColor: "#E7ECF3",
           paddingTop: 8,
+          paddingBottom: bottomPadding,
+          height: 56 + Math.max(0, fontScale - 1) * 16 + bottomPadding,
         },
         tabBarLabelStyle: {
           fontSize: 12,

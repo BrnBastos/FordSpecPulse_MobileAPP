@@ -12,6 +12,7 @@ import {
 import { colors, spacing } from "../constants/specpulseTheme";
 import { errorMessage } from "../services/errors";
 import { login } from "../services/specpulseApi";
+import { AutomotiveBanner } from "../components/AutomotiveImages";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -37,13 +38,8 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         <AppCard style={styles.heroCard}>
-          <View style={styles.heroOverlay}>
-            <Text style={styles.heroTitle}>Ford SpecPulse</Text>
-            <Text style={styles.heroText}>
-              Inteligência de especificações para comparar versões com mais
-              clareza.
-            </Text>
-          </View>
+          <AutomotiveBanner variant="login" />
+          <Text style={styles.heroTitle}>Ford SpecPulse</Text>
         </AppCard>
 
         <AppCard style={styles.formCard}>
@@ -70,7 +66,7 @@ export default function LoginScreen() {
                 accessibilityLabel="E-mail"
                 value={email}
                 onChangeText={setEmail}
-                placeholder="ana@ford.internal"
+                placeholder="seu@email.com"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -149,28 +145,16 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     backgroundColor: colors.navy,
-    minHeight: 140,
     overflow: "hidden",
     padding: 0,
   },
-  heroOverlay: {
-    backgroundColor: colors.navy,
-    flex: 1,
-    justifyContent: "flex-end",
-    minHeight: 140,
-    padding: spacing.lg,
-  },
   heroTitle: {
     color: colors.white,
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: "600",
-  },
-  heroText: {
-    color: "#DCEBFF",
-    fontSize: 15,
-    fontWeight: "700",
-    lineHeight: 21,
-    marginTop: 6,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
   },
   formCard: {
     padding: spacing.lg,
@@ -218,7 +202,7 @@ const styles = StyleSheet.create({
     color: colors.graphite,
     flex: 1,
     fontSize: 15,
-    fontWeight: "700",
+    fontWeight: "400",
     minHeight: 44,
   },
   actions: {

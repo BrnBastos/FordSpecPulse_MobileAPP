@@ -184,12 +184,44 @@ test("history deduplicates, reopens, deletes individually and isolates accounts"
   await signIn("b");
   assert.deepEqual(await readHistory(), []);
 });
-test("refresh timeout preserves the session", async () => {
+test("refresh timeout preserves the session and its timeout error", async () => {
   await signIn("a", true);
-  axios.defaults.adapter = async () => {
-    throw new AxiosError("timeout", "ECONNABORTED");
+  axios.defaults.adapter = async (config) => {
+    throw new AxiosError("timeout", "ECONNABORTED", config);
+  };
+  await assert.rejects(api.get("/test"), { code: "ECONNABORTED" });
+  assert.equal((await getStoredAuthSession())?.user.id, "a");
+});
+test("rejected refresh with HTTP 422 clears the unusable session without sending the catalog request", async () => {
+  await signIn("a", true);
+  let catalogCalls = 0;
+  api.defaults.adapter = async (config) => {
+    catalogCalls++;
+    return response({}, config);
+  };
+  axios.defaults.adapter = async (config) => {
+    throw new AxiosError("invalid refresh", "ERR_BAD_REQUEST", config, null, {
+      ...response({}, config),
+      status: 422,
+    });
   };
   await assert.rejects(api.get("/test"));
+  assert.equal(await getStoredAuthSession(), null);
+  assert.equal(catalogCalls, 0);
+});
+test("refresh server failure preserves the session and HTTP status", async () => {
+  await signIn("a", true);
+  axios.defaults.adapter = async (config) => {
+    throw new AxiosError("unavailable", "ERR_BAD_RESPONSE", config, null, {
+      ...response({}, config),
+      status: 503,
+    });
+  };
+  await assert.rejects(
+    api.get("/test"),
+    (error: unknown) =>
+      axios.isAxiosError(error) && error.response?.status === 503,
+  );
   assert.equal((await getStoredAuthSession())?.user.id, "a");
 });
 test("concurrent expired requests share one refresh", async () => {

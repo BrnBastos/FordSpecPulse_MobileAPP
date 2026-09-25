@@ -1,0 +1,42 @@
+{
+  "version": "1.2.0",
+  "date": "2026-09-25",
+  "device": "Pixel_9 Android 16/API 36",
+  "apkSha256": "a8173fa37520cd911b036c31875cf890903c68042ce345abcd4aa8cfef9db89c",
+  "accountRole": "SOMENTE_LEITURA",
+  "api": "https://ford-spec-pulse-api.onrender.com/api",
+  "widthDp": 393,
+  "fontScale": 1.0,
+  "verified": [
+    "real login",
+    "home/catalog/vehicle/version navigation",
+    "unknown free attribute preserved in technical sheet",
+    "expand source metadata",
+    "Raptor/Hilux selection",
+    "free-only comparison permission denied",
+    "empty history artwork",
+    "translated profile and categories",
+    "session restored after final APK install and cold restart",
+    "logout persisted after cold restart"
+  ],
+  "freeQueryEvidence": "Captured before final text-only polish; query implementation unchanged.",
+  "comparisonResponse": "Seu perfil não tem permissão para esta ação.",
+  "pending": [
+    "authorized comparison result",
+    "save two real analyses, restart, reopen, delete and account isolation",
+    "full screen demonstration",
+    "comparison against evaluator Ranger Raptor reference"
+  ],
+  "reviewVideo": {
+    "path": "artifacts/FordSpecPulse-1.2.0-consulta.mp4",
+    "durationSeconds": 19.5722,
+    "completeSprintDemo": false
+  },
+  "restoredEmulator": {
+    "size": "1080x1400",
+    "density": "reset (420 physical)",
+    "fontScale": 1.15,
+    "showImeWithHardKeyboard": 0
+  },
+  "finalSession": "logged out"
+}

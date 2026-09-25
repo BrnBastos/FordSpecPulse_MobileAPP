@@ -1,33 +1,26 @@
 # Sprint 3 — Mobile Development and IoT
 
-Base auditada: branch `develop`, commit `647cc0778ff49645f303cf62766fc5aec026bff3`, árvore inicialmente limpa. Escopo: Desafio 01, sem declarar conclusão das demais disciplinas.
+Estado da versão **1.2.0**, atualizado em 25/09/2026. Escopo: Desafio 01 — Ford, sem declarar conclusão das demais disciplinas.
 
-Fonte: `Ford_V2.pdf`, recebido em 21/09/2026, 21 páginas. Páginas 4–5 e 13 conferidas visualmente; página 5 exige atributos livres e Ranger Raptor; página 13 exige APK instalado e demonstração de todas as telas. Entrega 27/09; vídeo de até seis minutos pertence à Sprint 4 (página 19).
+Fonte: `Ford_V2.pdf`, recebido em 21/09/2026, 21 páginas. As páginas 4–5 e 13 foram conferidas visualmente. A página 5 descreve a consulta livre e o caso Ranger Raptor; a página 13 exige os fluxos funcionais, identidade visual, organização/documentação, demonstração de todas as telas e APK instalado. Entrega indicada: 27/09. O vídeo de até seis minutos pertence à Sprint 4, página 19.
 
-| Requisito | Estado inicial | Implementação / situação | Prioridade | Evidência de aceite | Dependência externa |
-|---|---|---|---|---|---|
-| Seleção real | Primeiro Ford/concorrente | Seletores pesquisáveis marca/modelo/versão, invalidação de resultado, validação no envio | P0 | Testes de estado; integração pendente | Catálogo API |
-| Atributos livres | Apenas taxonomia | Busca/agrupamento; extensão contratual documentada, processamento livre bloqueado | P0 | `contrato-api.md` | Backend acessível e contrato |
-| Ficha individual | Todos os dados sem filtro | Seleção de atributos e retenção de ausentes | P0 | Testes `requestedSpecifications` | Dados reais |
-| Dados honestos | Mocks silenciosos | Mocks removidos; erros/retry; comparação sem identidade falha explicitamente | P0 | Testes de adapters | Contrato real de células |
-| Sessão | AsyncStorage / timeout encerrava sessão | SecureStore, migração, refresh único, descarte de resposta tardia, navegação reativa | P0 | Testes de refresh/logout | Validação Android e conta |
-| Ranger Raptor | Limited+/XLT em mocks | Nenhuma substituição; matriz pendente | P0 | `validacao-ranger-raptor.md` | Slide de referência e API |
-| Permissões | README com conta administrativa | Sem bypass; mensagens 401/403; credenciais públicas removidas | P0 | Testes locais e inspeção | Conta de avaliação adequada |
-| Android APK | Sem pacote/perfil | Pacote `com.brnbastos.fordspecpulse`, perfil `sprint3` | P0 | Build, instalação e fluxo registrados separadamente em QA | EAS/assinatura/API |
-| Histórico | Um registro global | Coleção versionada por usuário, reabertura, deduplicação, exclusão | P1 | Testes de persistência/isolamento | Validação de reinício Android |
-| UI | Template, textos técnicos, confiança sem critério | Quatro abas; Perfil no Início; tema claro; controles compartilhados; percentuais removidos das fichas/resultados | P1 | Login/cadastro capturados; demais telas pendentes | API/conta para telas autenticadas |
-| Documentação | MVP e credenciais | README e matriz atualizados com pendências reais | P1 | Arquivos `docs/` | Evidências finais |
+| Requisito | Implementação atual | Evidência e aceite restante |
+| --- | --- | --- |
+| Seleção real de veículos/versões | Seletores pesquisáveis, marca/modelo/ano/mercado/versão e validação Ford/concorrente. | Catálogo e navegação verificados; Raptor versus Hilux selecionadas corretamente no APK. |
+| Atributos livres e ficha individual | Adicionar, editar e remover termos, deduplicar e preservar ausentes; até 50 atributos. Usa o endpoint real de ficha. | Leituras autenticadas Raptor/Hilux aprovadas; consulta livre no APK manteve o termo desconhecido e sua fonte expansível. |
+| Catálogo e ficha completos | Paginação de veículos, versões, taxonomia e especificações; rejeição de respostas inconsistentes. | 42 testes no total e paginação real com múltiplas páginas aprovada. |
+| Comparação | Autorização por `/comparacoes`, seguida das duas fichas para termos livres; identidades, unidades e estados preservados. | Perfil padrão negou a ação no APK com mensagem de permissão. Falta conta autorizada para validar resultado real. |
+| Sessão e histórico | SecureStore, refresh compartilhado, proteção contra respostas de outra conta; snapshots por usuário e reabertura/exclusão. | Login real, restauração da sessão, logout persistente após reinício e histórico vazio verificados; histórico preenchido depende do resultado autorizado. Troca de conta/refresh reais ainda pendentes. |
+| Ranger Raptor | Identidade BR/2024 real, 23 atributos consultados: 21 presentes e 2 não informados. | [Matriz e evidências](validacao-ranger-raptor.md); falta slide complementar para conferir todos os requisitos do avaliador. |
+| Identidade visual | Tema claro azul/navy, quatro abas, controles compartilhados, fontes sob expansão e duas imagens geradas locais. | Telas públicas em três larguras/fonte ampliada; Início, catálogo, veículo, versão, histórico vazio e perfil autenticados verificados. |
+| Código e README | Serviços de sessão, paginação, fichas e histórico separados; contrato e instruções atualizados. | TypeScript, lint, 42 testes e exports aprovados; avisos de dependências documentados em QA. |
+| APK instalado | Release local assinado 1.2.0/code 3, usando Render; cota EAS cloud esgotada. | APK final instalado e aberto sem Metro/Expo Go; reinício restaurou a sessão. [Metadados e QA](qa-sprint-3.md). |
+| Demonstração de todas as telas | Galeria separa versão atual e histórico; vídeo curto da consulta real no APK final disponível. | Evidência parcial: faltam conclusão/capturas do fluxo autorizado de comparação e histórico preenchido. |
 
-## Revisão de 25/09/2026
+A conta temporária de QA foi criada pelo cadastro normal com perfil `SOMENTE_LEITURA`, sem alterar permissões. Os checks diretos da API e os checks do APK são registrados separadamente. Não há modo demo nem dados fictícios no produto.
 
-A API Render responde (OpenAPI 200, catálogo sem token 401). O contrato agora oferece consulta individual com atributos livres, ainda não integrada. Também foi identificada paginação não consumida pelo cliente (primeira página de 25 itens). O APK existente usa Railway e requer substituição. A matriz acima descreve a implementação inicial; estes achados atualizam suas dependências e mantêm os P0 abertos. Detalhes e próximos passos em [revisao-sprint-3.md](revisao-sprint-3.md).
+A configuração, geração do APK, instalação e aprovação dos fluxos são aceites distintos. A sprint permanece parcialmente validada enquanto faltarem a referência Raptor e a demonstração dos fluxos pendentes. Consulte [QA](qa-sprint-3.md), [revisão atual](revisao-sprint-3.md) e [contrato](contrato-api.md).
 
-## Auditoria externa de 21/09/2026
+## Histórico resumido
 
-- `/v3/api-docs`: HTTP 502 (Application failed to respond).
-- `/api/veiculos`: timeout após 15 segundos; nenhuma resposta HTTP.
-- Nenhum backend Java localizado na árvore FIAP pesquisada. Consulta pública dos 31 repositórios da conta `BrnBastos` também não encontrou backend Ford/SpecPulse; apenas o aplicativo mobile. Isso não exclui repositórios privados ou de outros integrantes.
-- Expo CLI: conta autenticada `bbastos`; nenhum projectId no checkout inicial. Projeto criado em `bbastos`, ID `429a726f-9a7d-41d5-83f0-04218a0113c2`; chave Android gerada no EAS.
-- Android SDK 36 e AVD Pixel_9 disponíveis, inicialmente nenhum dispositivo iniciado.
-
-Não marcar entrega como concluída enquanto houver P0 aberto. A configuração de build, a geração do APK e a validação do fluxo no APK são aceites diferentes.
+A implementação 1.1.0, de 21/09, usava Railway; suas falhas de conexão e capturas públicas não descrevem a versão atual. A revisão `c3f6ba3` identificou paginação e atributos livres ainda ausentes. Esses pontos foram implementados em 1.2.0 com o contrato Render e testados; os aceites abertos são os da matriz acima.

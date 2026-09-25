@@ -18,9 +18,12 @@ export default function ProfileScreen() {
     analista: "Analista",
     gerente: "Gerente",
     read_only: "Consulta",
+    somente_leitura: "Somente leitura",
+    administrador: "Administrador",
+    validador_dados: "Validador de dados",
   };
   return (
-    <ScreenContainer>
+    <ScreenContainer bottomSafeArea={false}>
       <ScrollView>
         <PageTitle title="Perfil" />
         <AppCard>

@@ -1,14 +1,17 @@
 import { build } from "esbuild";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 const dir = await mkdtemp(join(tmpdir(), "specpulse-tests-"));
 try {
-  const outfile = join(dir, "tests.cjs");
+  const entries = (await readdir("tests")).filter((file) =>
+    file.endsWith(".test.ts"),
+  );
   await build({
-    entryPoints: ["tests/behavior.test.ts"],
-    outfile,
+    entryPoints: entries.map((file) => join("tests", file)),
+    outdir: dir,
+    outExtension: { ".js": ".cjs" },
     bundle: true,
     platform: "node",
     format: "cjs",
@@ -38,8 +41,14 @@ try {
     ],
   });
   process.exitCode =
-    spawnSync(process.execPath, ["--test", outfile], { stdio: "inherit" })
-      .status ?? 1;
+    spawnSync(
+      process.execPath,
+      [
+        "--test",
+        ...entries.map((file) => join(dir, file.replace(/\.ts$/, ".cjs"))),
+      ],
+      { stdio: "inherit" },
+    ).status ?? 1;
 } finally {
   await rm(dir, { recursive: true, force: true });
 }

@@ -5,6 +5,12 @@ import {
 } from "./adapters";
 import type { User } from "./auth";
 import { api, sessionEpoch } from "./auth";
+import { fetchAllPages } from "./pagination";
+import {
+  appendRequestedRows,
+  normalizeRequestedTerms,
+  queryTechnicalSheet,
+} from "./technicalSheets";
 export {
   API_BASE_URL,
   getStoredAuthSession,
@@ -39,6 +45,7 @@ export type TechnicalAttribute = {
   canonicalName: string;
   category: string;
   strategicWeight: number;
+  synonyms?: string[];
 };
 
 export type SpecValue = {
@@ -52,6 +59,7 @@ export type SpecValue = {
     | "not_available"
     | "not_informed"
     | "conflict"
+    | "unknown_attribute"
     | "pending_validation";
   confidence: number;
   confidenceLevel: "high" | "medium" | "low" | "unknown";
@@ -87,12 +95,6 @@ export type ComparisonResult = {
     confidenceLevel: "high" | "medium" | "low" | "unknown";
   }[];
 };
-
-function unwrapData<T>(data: T[] | { data?: T[] }) {
-  const list = Array.isArray(data) ? data : data?.data;
-  if (!Array.isArray(list)) throw new Error("Resposta inválida do serviço.");
-  return list;
-}
 
 function brandNameFromBrandId(brandId: string) {
   const brands: Record<string, string> = {
@@ -132,15 +134,19 @@ async function fetchMeFromApi(): Promise<User> {
 }
 
 async function fetchVehiclesFromApi(): Promise<Vehicle[]> {
-  const { data } = await api.get<Vehicle[] | { data?: Vehicle[] }>("/veiculos");
-  return unwrapData(data).map(normalizeVehicle);
+  const vehicles = await fetchAllPages<Vehicle>(
+    "/veiculos",
+    (item) => item?.id,
+  );
+  return vehicles.map(normalizeVehicle);
 }
 
 async function fetchAttributesFromApi(): Promise<TechnicalAttribute[]> {
-  const { data } = await api.get<
-    TechnicalAttribute[] | { data?: TechnicalAttribute[] }
-  >("/atributos/taxonomia");
-  return unwrapData(data).map((attribute) => {
+  const attributes = await fetchAllPages<TechnicalAttribute>(
+    "/atributos/taxonomia",
+    (item) => item?.id,
+  );
+  return attributes.map((attribute) => {
     if (
       !attribute ||
       typeof attribute.id !== "string" ||
@@ -169,10 +175,11 @@ export const getAttributes = getAttributesFromApi;
 export async function getVehicleVersions(
   vehicleId: string,
 ): Promise<VehicleVersion[]> {
-  const { data } = await api.get(
+  const versions = await fetchAllPages<VehicleVersion>(
     `/veiculos/${encodeURIComponent(vehicleId)}/versoes`,
+    (item) => item?.id,
   );
-  return unwrapData<VehicleVersion>(data).map((version) => {
+  return versions.map((version) => {
     if (
       !version ||
       typeof version.id !== "string" ||
@@ -186,26 +193,35 @@ export async function getVehicleVersions(
 export async function getVersionSpecifications(
   versionId: string,
 ): Promise<SpecValue[]> {
-  const { data } = await api.get(
+  const specifications = await fetchAllPages<SpecValue>(
     `/versoes/${encodeURIComponent(versionId)}/especificacoes`,
+    (item) => item?.attributeId,
   );
-  return unwrapData<SpecValue>(data).map(normalizeSpec);
+  return specifications.map((spec) => {
+    if (spec.versionId !== versionId)
+      throw new Error("Especificação inválida do serviço.");
+    return normalizeSpec(spec);
+  });
 }
 export type CreateComparisonInput = {
   referenceVersionId: string;
   competitorVersionIds: string[];
   attributeIds: string[];
+  requestedAttributes?: string[];
   customerProfileId?: string;
 };
 export async function createComparison(
   input: CreateComparisonInput,
 ): Promise<ComparisonResult> {
   const epoch = sessionEpoch();
+  const requestedAttributes = normalizeRequestedTerms(
+    input.requestedAttributes ?? [],
+  );
   if (
     !input.referenceVersionId ||
     input.competitorVersionIds.length !== 1 ||
     !input.competitorVersionIds[0] ||
-    !input.attributeIds.length
+    !(input.attributeIds.length || requestedAttributes.length)
   )
     throw new Error("Selecione duas versões e ao menos um atributo.");
   const [ford, competitor, attributes] = await Promise.all([
@@ -222,26 +238,54 @@ export async function createComparison(
     cv.brandName?.toLowerCase() === "ford" ||
     ford.id === competitor.id ||
     input.competitorVersionIds.length !== 1 ||
-    !input.attributeIds.length ||
     input.attributeIds.some((id) => !attributes.some((a) => a.id === id))
   ) {
     throw new Error("Selecione versões e atributos válidos para a comparação.");
   }
+  const attributeIds = [...new Set(input.attributeIds)];
+  if (attributeIds.length + requestedAttributes.length > 50)
+    throw new Error("Selecione até 50 atributos por consulta.");
+  const selection = { ...input, attributeIds, requestedAttributes };
   if (epoch !== sessionEpoch()) throw new Error("A sessão foi alterada.");
-  const { data } = await api.post<ApiComparisonResult>("/comparacoes", input);
+  // Always use the comparison endpoint: its permission checks apply even
+  // when every requested term is outside the taxonomy. Never send invented IDs.
+  const { data } = await api.post<ApiComparisonResult>("/comparacoes", {
+    referenceVersionId: input.referenceVersionId,
+    competitorVersionIds: input.competitorVersionIds,
+    attributeIds,
+    ...(input.customerProfileId
+      ? { customerProfileId: input.customerProfileId }
+      : {}),
+  });
   if (epoch !== sessionEpoch()) throw new Error("A sessão foi alterada.");
-  const result = normalizeComparisonResult(data, input, attributes);
+  let result = normalizeComparisonResult(data, selection, attributes);
+  if (requestedAttributes.length) {
+    const [fordSheet, competitorSheet] = await Promise.all([
+      queryTechnicalSheet({
+        vehicle: fv,
+        version: ford,
+        attributes: requestedAttributes,
+      }),
+      queryTechnicalSheet({
+        vehicle: cv,
+        version: competitor,
+        attributes: requestedAttributes,
+      }),
+    ]);
+    if (epoch !== sessionEpoch()) throw new Error("A sessão foi alterada.");
+    result = appendRequestedRows(result, fordSheet, competitorSheet, selection);
+  }
   return {
     ...result,
     createdAt: new Date().toISOString(),
-    selection: input,
+    selection,
     fordLabel: `${fv.brandName} ${fv.model} ${ford.name} • ${fv.year} • ${fv.market}`,
     competitorLabel: `${cv.brandName} ${cv.model} ${competitor.name} • ${cv.year} • ${cv.market}`,
   };
 }
 export async function getVehicleById(id: string): Promise<Vehicle> {
   const { data } = await api.get(`/veiculos/${encodeURIComponent(id)}`);
-  if (!data || typeof data.id !== "string" || typeof data.model !== "string")
+  if (!data || data.id !== id || typeof data.model !== "string")
     throw new Error("Resposta inválida do serviço.");
   return normalizeVehicle(data);
 }
@@ -249,7 +293,7 @@ export async function getVersionById(id: string): Promise<VehicleVersion> {
   const { data } = await api.get(`/versoes/${encodeURIComponent(id)}`);
   if (
     !data ||
-    typeof data.id !== "string" ||
+    data.id !== id ||
     typeof data.vehicleId !== "string" ||
     typeof data.name !== "string"
   )

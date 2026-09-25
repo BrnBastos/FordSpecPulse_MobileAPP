@@ -19,9 +19,24 @@ type CardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export function ScreenContainer({ children }: CardProps) {
+type ScreenContainerProps = CardProps & {
+  /** Tab screens let the tab bar reserve the bottom system inset. */
+  bottomSafeArea?: boolean;
+};
+
+export function ScreenContainer({
+  children,
+  bottomSafeArea = true,
+}: ScreenContainerProps) {
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.safeArea}>
+    <SafeAreaView
+      edges={
+        bottomSafeArea
+          ? ["top", "left", "right", "bottom"]
+          : ["top", "left", "right"]
+      }
+      style={styles.safeArea}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.screen}

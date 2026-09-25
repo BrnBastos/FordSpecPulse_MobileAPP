@@ -21,6 +21,7 @@ import {
 } from "../../services/specpulseApi";
 import { errorMessage } from "../../services/errors";
 import { useComparisonStore } from "../../store/comparisonStore";
+import { AutomotiveBanner } from "../../components/AutomotiveImages";
 
 export default function CompareScreen() {
   const state = useComparisonStore();
@@ -31,20 +32,30 @@ export default function CompareScreen() {
   });
   const mutation = useMutation({
     mutationFn: createComparison,
-    onSuccess: (result) => {
-      state.setCurrentComparison(result);
+    onSuccess: (result, input) => {
+      const current = useComparisonStore.getState();
+      if (
+        current.fordVersionId !== input.referenceVersionId ||
+        current.competitorVersionId !== input.competitorVersionIds[0] ||
+        JSON.stringify(current.selectedAttributeIds) !==
+          JSON.stringify(input.attributeIds) ||
+        JSON.stringify(current.requestedAttributes) !==
+          JSON.stringify(input.requestedAttributes ?? [])
+      )
+        return;
+      current.setCurrentComparison(result);
       router.push("/comparison-result");
     },
   });
   if (vehicles.isLoading || attributes.isLoading)
     return (
-      <ScreenContainer>
+      <ScreenContainer bottomSafeArea={false}>
         <LoadingState />
       </ScreenContainer>
     );
   if (vehicles.error || attributes.error)
     return (
-      <ScreenContainer>
+      <ScreenContainer bottomSafeArea={false}>
         <ErrorState
           message={errorMessage(vehicles.error ?? attributes.error)}
           onRetry={() => {
@@ -55,7 +66,7 @@ export default function CompareScreen() {
       </ScreenContainer>
     );
   return (
-    <ScreenContainer>
+    <ScreenContainer bottomSafeArea={false}>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -64,13 +75,17 @@ export default function CompareScreen() {
           title="Nova comparação"
           subtitle="Escolha as versões e os atributos que deseja analisar."
         />
+        <AutomotiveBanner variant="compare" />
         <SectionTitle>1. Versão Ford</SectionTitle>
         <VehicleSelection
           vehicles={(vehicles.data ?? []).filter(
             (v) => v.brandName?.toLowerCase() === "ford",
           )}
           versionId={state.fordVersionId}
-          onSelect={state.setFordVersionId}
+          onSelect={(id) => {
+            mutation.reset();
+            state.setFordVersionId(id);
+          }}
         />
         <SectionTitle>2. Versão concorrente</SectionTitle>
         <VehicleSelection
@@ -78,15 +93,28 @@ export default function CompareScreen() {
             (v) => v.brandName?.toLowerCase() !== "ford",
           )}
           versionId={state.competitorVersionId}
-          onSelect={state.setCompetitorVersionId}
+          onSelect={(id) => {
+            mutation.reset();
+            state.setCompetitorVersionId(id);
+          }}
         />
         <SectionTitle>
-          3. Atributos ({state.selectedAttributeIds.length})
+          3. Atributos (
+          {state.selectedAttributeIds.length + state.requestedAttributes.length}
+          )
         </SectionTitle>
         <AttributePicker
           attributes={attributes.data ?? []}
           selected={state.selectedAttributeIds}
-          toggle={state.toggleAttribute}
+          toggle={(id) => {
+            mutation.reset();
+            state.toggleAttribute(id);
+          }}
+          requestedAttributes={state.requestedAttributes}
+          onRequestedAttributesChange={(terms) => {
+            mutation.reset();
+            state.setRequestedAttributes(terms);
+          }}
         />
         {mutation.error && (
           <ErrorState message={errorMessage(mutation.error)} />
@@ -100,7 +128,10 @@ export default function CompareScreen() {
               mutation.isPending ||
               !state.fordVersionId ||
               !state.competitorVersionId ||
-              !state.selectedAttributeIds.length
+              !(
+                state.selectedAttributeIds.length +
+                state.requestedAttributes.length
+              )
             }
             onPress={() => {
               if (
@@ -112,6 +143,7 @@ export default function CompareScreen() {
                   referenceVersionId: state.fordVersionId,
                   competitorVersionIds: [state.competitorVersionId],
                   attributeIds: state.selectedAttributeIds,
+                  requestedAttributes: state.requestedAttributes,
                 });
             }}
           />
@@ -156,6 +188,7 @@ function VehicleSelection({
     <View>
       <Selector
         label="Marca"
+        showBrandLogos
         value={brand}
         options={brands}
         onSelect={(id) => {

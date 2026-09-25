@@ -1,0 +1,36 @@
+[
+  {
+    "url": "https://ford-spec-pulse-api.onrender.com/v3/api-docs",
+    "checkedAt": "2026-09-25T20:55:24.969536+00:00",
+    "status": 200,
+    "bytes": 37048,
+    "seconds": 16.61
+  },
+  {
+    "url": "https://ford-spec-pulse-api.onrender.com/v3/api-docs",
+    "checkedAt": "2026-09-25T21:00:00Z",
+    "timePrecision": "approximate minute",
+    "environment": "Android 16 emulator, HttpsURLConnection, no credentials",
+    "status": 200,
+    "seconds": 1.91
+  },
+  {
+    "environment": "Installed Android app with existing evaluation session",
+    "checkedAt": "2026-09-25T21:03:09Z",
+    "path": "/api/auth/refresh",
+    "status": 422,
+    "result": "Refresh rejection was masked as a cancellation / connection error. No credentials or tokens captured."
+  },
+  {
+    "url": "https://ford-spec-pulse-api.onrender.com/api/veiculos",
+    "checkedAt": "2026-09-25T21:07:13.942035+00:00",
+    "status": 401,
+    "seconds": 0.26
+  },
+  {
+    "url": "https://ford-spec-pulse-api.onrender.com/v3/api-docs",
+    "checkedAt": "2026-09-25T21:07:14.203441+00:00",
+    "status": 200,
+    "seconds": 0.27
+  }
+]

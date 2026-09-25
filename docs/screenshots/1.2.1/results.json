@@ -1,0 +1,31 @@
+{
+  "version": "1.2.1",
+  "versionCode": 4,
+  "apkSha256": "83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0",
+  "device": "Pixel_9 emulator, Android 16 / API 36",
+  "checks": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "behaviorTests": 42,
+    "nativeRejectedRefreshReturnsToLogin": "passed on final APK",
+    "login360dpFont1_3": "passed",
+    "keyboardActionsReachable360dpFont1_3": "passed by scrolling",
+    "registration360dpFont1_3": "passed",
+    "home412dpFont1_3Gestures": "passed; identical layout in final APK",
+    "home412dpFont1_3ThreeButtonNavigation": "passed; identical layout in final APK"
+  },
+  "measuredInsets412dpPixels": {
+    "statusBarBottom": 142,
+    "firstHomeTextTop": 184,
+    "gestureBarTop": 2361,
+    "gestureTabLabelBottom": 2361,
+    "threeButtonBarTop": 2298,
+    "threeButtonTabLabelBottom": 2298
+  },
+  "limits": [
+    "No iOS device validation.",
+    "Selector modal safe-area change is implemented but not rechecked natively after the existing session was rejected.",
+    "360 dp catalog/vehicle/selector captures predate the safe-area changes; see gallery.",
+    "No new credential-based login was performed during the availability check."
+  ]
+}

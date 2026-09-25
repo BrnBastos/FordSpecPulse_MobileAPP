@@ -1,16 +1,17 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   AppCard,
-  EmptyState,
   ErrorState,
   LoadingState,
   PageTitle,
+  PrimaryButton,
   ScreenContainer,
   SecondaryButton,
 } from "../../components/SpecPulseUI";
+import { colors, spacing } from "../../constants/specpulseTheme";
 import {
   clearHistory,
   deleteAnalysis,
@@ -32,7 +33,7 @@ export default function HistoryScreen() {
     onSuccess: () => client.invalidateQueries({ queryKey: ["history"] }),
   });
   return (
-    <ScreenContainer>
+    <ScreenContainer bottomSafeArea={false}>
       <ScrollView contentContainerStyle={{ gap: 12, paddingBottom: 32 }}>
         <PageTitle
           title="Análises salvas"
@@ -48,16 +49,23 @@ export default function HistoryScreen() {
           />
         )}
         {!query.isLoading && !query.error && !query.data?.length && (
-          <>
-            <EmptyState
-              title="Nenhuma análise salva"
-              message="Gere uma comparação e salve o resultado para consultar depois."
+          <AppCard style={styles.emptyCard}>
+            <Image
+              source={require("../../../assets/images/history-empty-generated-v1.jpg")}
+              style={styles.emptyImage}
+              resizeMode="contain"
+              accessible={false}
+              importantForAccessibility="no"
             />
-            <SecondaryButton
-              label="Nova comparação"
+            <Text style={styles.emptyTitle}>Sua primeira comparação</Text>
+            <Text style={styles.emptyDescription}>
+              Compare versões e salve o resultado aqui.
+            </Text>
+            <PrimaryButton
+              label="Comparar versões"
               onPress={() => router.push("/compare")}
             />
-          </>
+          </AppCard>
         )}
         {query.data?.map((item) => (
           <AppCard key={item.id}>
@@ -65,7 +73,7 @@ export default function HistoryScreen() {
               {item.result.fordLabel} × {item.result.competitorLabel}
             </Text>
             <Text style={{ marginVertical: 12 }}>
-              Snapshot salvo em {new Date(item.savedAt).toLocaleString("pt-BR")}
+              Salva em {new Date(item.savedAt).toLocaleString("pt-BR")}
             </Text>
             <Text>{item.result.summary.executiveSummary}</Text>
             <View style={{ gap: 8, marginTop: 12 }}>
@@ -110,3 +118,26 @@ export default function HistoryScreen() {
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  emptyCard: {
+    gap: spacing.md,
+  },
+  emptyImage: {
+    alignSelf: "center",
+    width: 180,
+    height: 120,
+  },
+  emptyTitle: {
+    color: colors.navy,
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  emptyDescription: {
+    color: colors.gray,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
+  },
+});

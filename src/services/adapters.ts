@@ -22,6 +22,8 @@ function normalizeSpecStatus(
   if (status === "not_informed" || status === "NAO_INFORMADO")
     return "not_informed";
   if (status === "conflict" || status === "CONFLITO") return "conflict";
+  if (status === "unknown_attribute" || status === "ATRIBUTO_DESCONHECIDO")
+    return "unknown_attribute";
   return "pending_validation";
 }
 

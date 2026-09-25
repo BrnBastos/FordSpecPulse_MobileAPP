@@ -70,13 +70,15 @@ export default function ComparisonResultScreen() {
         </AppCard>
 
         <Text style={{ marginTop: 12 }}>
-          Consulta realizada em{" "}
+          Consultado em{" "}
           {data.createdAt
             ? new Date(data.createdAt).toLocaleString("pt-BR")
             : "data não informada"}
-          . Este resultado não é atualizado automaticamente.
+          . Resultado salvo sem atualização automática.
         </Text>
-        <SectionTitle>Vantagens apontadas pelo serviço</SectionTitle>
+        {!!data.summary.keyAdvantages.length && (
+          <SectionTitle>Vantagens apontadas pelo serviço</SectionTitle>
+        )}
 
         <View style={styles.list}>
           {data.summary.keyAdvantages.map((item) => (
@@ -87,7 +89,9 @@ export default function ComparisonResultScreen() {
           ))}
         </View>
 
-        <SectionTitle>Pontos de atenção</SectionTitle>
+        {!!data.summary.keyGaps.length && (
+          <SectionTitle>Pontos de atenção</SectionTitle>
+        )}
 
         <View style={styles.list}>
           {data.summary.keyGaps.map((item) => (

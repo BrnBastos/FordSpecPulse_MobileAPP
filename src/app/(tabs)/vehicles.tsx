@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import {
   AppCard,
-  Badge,
   EmptyState,
   ErrorState,
   LoadingState,
@@ -23,6 +22,7 @@ import { segmentLabel } from "../../components/Selection";
 import { colors, spacing } from "../../constants/specpulseTheme";
 import { errorMessage } from "../../services/errors";
 import { getVehicles, Vehicle } from "../../services/specpulseApi";
+import { BrandLogo } from "../../components/AutomotiveImages";
 
 export default function VehiclesScreen() {
   const [search, setSearch] = useState("");
@@ -54,7 +54,7 @@ export default function VehiclesScreen() {
 
   if (isLoading) {
     return (
-      <ScreenContainer>
+      <ScreenContainer bottomSafeArea={false}>
         <LoadingState label="Buscando veículos..." />
       </ScreenContainer>
     );
@@ -62,7 +62,7 @@ export default function VehiclesScreen() {
 
   if (error)
     return (
-      <ScreenContainer>
+      <ScreenContainer bottomSafeArea={false}>
         <ErrorState
           message={errorMessage(error)}
           onRetry={() => {
@@ -73,17 +73,18 @@ export default function VehiclesScreen() {
     );
 
   return (
-    <ScreenContainer>
+    <ScreenContainer bottomSafeArea={false}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageTitle
           eyebrow="Catálogo"
           title="Veículos"
-          subtitle="Explore modelos Ford e concorrentes disponíveis para comparação competitiva."
+          subtitle="Encontre um modelo para consultar ou comparar."
         />
 
         <View style={styles.searchBox}>
           <Search color={colors.gray} size={20} />
           <TextInput
+            accessibilityLabel="Buscar por marca ou modelo"
             value={search}
             onChangeText={setSearch}
             placeholder="Buscar por marca ou modelo"
@@ -149,8 +150,6 @@ function FilterChip({
 }
 
 function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
-  const isFord = vehicle.brandName?.toLowerCase() === "ford";
-
   return (
     <Pressable
       onPress={() =>
@@ -159,16 +158,13 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
     >
       <AppCard>
         <View style={styles.cardHeader}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.brand}>
               {vehicle.brandName ?? vehicle.brandId}
             </Text>
             <Text style={styles.model}>{vehicle.model}</Text>
           </View>
-          <Badge
-            label={isFord ? "Ford" : "Concorrente"}
-            tone={isFord ? "blue" : "neutral"}
-          />
+          <BrandLogo name={vehicle.brandName ?? vehicle.brandId} />
         </View>
 
         <View style={styles.metaRow}>
@@ -178,8 +174,6 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           <Text style={styles.dot}>•</Text>
           <Text style={styles.meta}>{vehicle.year}</Text>
         </View>
-
-        <Text style={styles.updated}>Toque para ver versões disponíveis</Text>
       </AppCard>
     </Pressable>
   );
@@ -249,6 +243,7 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
     marginTop: spacing.md,
   },
@@ -258,10 +253,5 @@ const styles = StyleSheet.create({
   },
   dot: {
     color: colors.gray,
-  },
-  updated: {
-    color: colors.gray,
-    marginTop: spacing.md,
-    fontSize: 13,
   },
 });

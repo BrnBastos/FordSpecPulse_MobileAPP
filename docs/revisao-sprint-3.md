@@ -1,25 +1,37 @@
 # Revisão da tarefa — 25/09/2026
 
-Escopo desta revisão: conferir a implementação existente contra o prompt Sprint 3 e registrar o estado antes do commit. Preservada a alteração local da URL Railway para Render. Sem modo demo, novos cadastros ou alteração de permissões. Não é aprovação final da sprint.
+A versão **1.2.0 / código Android 3** implementa o plano: atributos livres, paginação completa e duas imagens geradas discretas. O APK local assinado usa Render. TypeScript, lint, 40 testes e exports Android/web foram aprovados.
 
-## Pendências confirmadas
+## O que foi concluído
 
-| Prioridade | Falta | Evidência e próximo passo |
-|---|---|---|
-| P0 | Atributos livres na ficha e comparação | `AttributePicker` permite somente taxonomia. OpenAPI agora publica `POST /api/fichas-tecnicas/consultar`, com termos livres e estados explícitos. Integrar a consulta individual, edição/remoção/deduplicação e decidir o caminho da comparação livre (o POST de comparação ainda recebe IDs). |
-| P0 | Catálogo/ficha completos além da primeira página | `unwrapData` em `specpulseApi.ts` descarta `page`, `pageSize` e `total`. Os quatro endpoints de listas usam página 1 e tamanho 25 por padrão. Implementar paginação para veículos, versões, atributos e especificações e testar conjuntos maiores que uma página. |
-| P0 | Validação autenticada e permissões | Render responde: `/v3/api-docs` HTTP 200; `/api/veiculos` sem token HTTP 401. Falta conta de avaliação. Testar login/refresh, consulta/comparação, 403, salvar duas análises, reiniciar, reabrir/excluir e trocar conta. Não houve uso de credenciais administrativas nem cadastro nesta revisão. |
-| P0 | Ranger Raptor exata | Falta referência complementar e consulta autenticada para identificar ano/mercado/versão. Exemplos do OpenAPI não comprovam dados. Conferir todos os atributos do material do avaliador. |
-| P0 | APK correspondente ao código atual | Build `0086b06a-1af3-4433-9d1e-606eec6190db` incorpora Railway; checkout usa Render. O manifesto antigo diverge em `eas.json` e `src/services/auth.ts`. Gerar novo APK após integrar/validar pendências e repetir instalação/fluxos, registrando hash e commit. |
-| P1 | Evidências das telas autenticadas | Galeria atual cobre apenas login/cadastro/teclado. Capturar telas, estados de erro/vazio/seleção e demonstração completa com dados reais. |
+- Inclusão, edição, remoção e deduplicação de termos na ficha e comparação, até 50 atributos. Dados ausentes ou desconhecidos permanecem visíveis.
+- Comparação com autorização do endpoint existente antes de consultar as duas fichas. `attributeIds: []` é permitido pelo esquema para seleção somente livre; sua operação autorizada ainda precisa de evidência nativa.
+- Identidade completa de marca/modelo/versão/ano/mercado, com tratamento dos IDs slug/UUID; preservação de estados, valores, unidades e fontes disponíveis.
+- Paginação de todos os quatro endpoints, sem devolver respostas truncadas, repetidas ou misturadas entre contas.
+- Imagens locais no cabeçalho do login e histórico vazio; seleção compacta com busca, chips e expansão.
+- Build local release após esgotamento da cota EAS cloud. Artefato, assinatura e manifestação das fontes em [QA](qa-sprint-3.md).
 
-## Verificações realizadas
+## Evidências reais
 
-- Leitura do prompt original, instruções `AGENTS.md`, matriz, contrato e documentação de QA.
-- Inspeção dos serviços/adapters, sessão, histórico, seleção, resultado e configuração de entrega.
-- OpenAPI real consultado: células possuem `versionId`; `customerProfileId` é opcional; consulta livre individual disponível; paginação documentada.
-- `npm run typecheck`, `npm run lint`, `npm test`: aprovados (20 testes).
-- Os checks anteriores de Expo Doctor mantêm dois avisos documentados; não foram executados novamente nesta revisão.
-- Manifesto do APK anterior preservado sem recalcular hashes para mascarar a diferença de runtime.
+Uma conta temporária foi cadastrada pelo fluxo normal, com perfil padrão `SOMENTE_LEITURA`, sem alteração de permissões. A API retornou 8 veículos, 8 versões e 23 atributos. As 16 consultas diretas preservaram as identidades; paginação de veículos, taxonomia e especificações foi exercitada em múltiplas páginas.
 
-O commit registra a implementação e estas lacunas. Não houve nova build nem teste autenticado nesta revisão; os artefatos de 21/09 continuam sendo evidência apenas daquele APK.
+As fichas da Ranger Raptor e Hilux BR/2024 responderam HTTP 200. A Raptor tem 21 valores presentes e dois consumos não informados; termos adicionais desconhecidos permaneceram na resposta. O [inventário Raptor](validacao-ranger-raptor.md) preserva as 23 linhas e evidências sanitizadas; a referência do avaliador continua ausente.
+
+No APK, as telas públicas de login/cadastro, teclado/Voltar e botões vazios foram verificadas em 360/393/412 dp, incluindo fonte ampliada. Login real, Início, catálogo, veículo, versão, histórico vazio e perfil funcionaram. A consulta livre de “banco massageador” preservou o pedido como não reconhecido, com fonte expansível. A seleção Raptor versus Hilux foi mantida; gerar comparação com o perfil padrão apresentou “Seu perfil não tem permissão para esta ação.”, sem contornar a restrição.
+
+O APK final foi instalado com sucesso e o reinício a frio restaurou a sessão. Logout seguido de encerramento forçado/reinício permaneceu no login; a negação da comparação somente livre foi repetida neste mesmo artefato. Categorias em português, fontes/datas, perfil traduzido e catálogo compacto foram conferidos; as capturas finais correspondentes foram atualizadas. Essa verificação autenticada não amplia os testes de três larguras para todas as telas internas. Um vídeo curto da consulta real foi gravado, como evidência parcial.
+
+## Aceites ainda abertos
+
+| Item | Próximo passo |
+| --- | --- |
+| Comparação autorizada no APK | Fornecer uma conta com permissão de comparação para testar resultado real, inclusive termos livres/mistos e `attributeIds: []`. Consulta livre e negação do perfil padrão já foram verificadas. |
+| Histórico preenchido e sessão | Salvar duas análises reais, reiniciar, reabrir/excluir e confirmar isolamento entre contas e refresh real. Restauração da sessão e logout persistente após reinício aprovados; os testes automatizados cobrem as demais proteções. |
+| Ranger Raptor versus referência | Receber o slide complementar e conferir todos os atributos requeridos, além de confirmar a equivalência com o caso BR/2024 encontrado. |
+| Demonstração de todas as telas | Completar capturas de resultado e histórico preenchido e a demonstração integral com conta autorizada. O APK final já foi instalado e verificado, com hash registrado em QA. |
+
+Os detalhes do contrato estão em [contrato-api.md](contrato-api.md). A API acessível e o APK instalado não substituem esses aceites.
+
+## Histórico
+
+A revisão `c3f6ba3` tinha 20 testes e encontrou atributos livres e paginação incompletos; ambos foram implementados nesta etapa. O APK 1.1.0 de 21/09 usava Railway e permanece apenas como evidência histórica. A entrega atual é 1.2.0/Render; não houve modo demo, alteração de perfil ou commit nesta etapa.

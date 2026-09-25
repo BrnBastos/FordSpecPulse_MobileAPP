@@ -1,96 +1,73 @@
-# Contrato da API e pendências
+# Contrato da API — versão 1.2.0
 
-Base: `https://ford-spec-pulse-api.onrender.com/api`. OpenAPI recuperado em 25/09/2026 (HTTP 200): [contrato publicado](https://ford-spec-pulse-api.onrender.com/v3/api-docs). Catálogo sem token respondeu HTTP 401; não houve validação autenticada.
+Base: `https://ford-spec-pulse-api.onrender.com/api`. O [OpenAPI publicado](https://ford-spec-pulse-api.onrender.com/v3/api-docs) foi recuperado em 25/09/2026 (HTTP 200). Catálogo e consulta de ficha sem token responderam HTTP 401. Uma conta temporária de QA foi cadastrada pelo fluxo normal (HTTP 201), com perfil padrão `SOMENTE_LEITURA`. Foram validadas leituras autenticadas na API e, no APK final, login, navegação, consulta livre, restauração da sessão, logout persistente após reinício e negação da comparação pelo perfil padrão.
+
+## Sessão e catálogo
 
 - `POST /auth/login`, `/auth/register`, `/auth/refresh`: `accessToken`, `refreshToken`, `expiraEm`, `refreshExpiraEm`, `usuario {id,nome,email,perfil}`.
 - `GET /veiculos`, `/veiculos/:id`, `/veiculos/:id/versoes`, `/versoes/:id`, `/versoes/:id/especificacoes`, `/atributos/taxonomia`.
-- Listas: array ou `{data: []}`; formato inválido gera erro, nunca lista vazia fictícia.
-- `POST /comparacoes`: `referenceVersionId`, `competitorVersionIds` (uma versão), `attributeIds`. O perfil fixo `urban_premium` foi removido: o OpenAPI o declara opcional.
-- Resultado: `id`, `rows`, `summary`. As linhas solicitadas ausentes são mantidas. Células devem incluir `versionId`; `fordValue`/`competitorValue` explícitos também são aceitos. Células apenas posicionais geram erro até o contrato garantir a ordem. Nenhuma troca silenciosa de colunas.
-- Não há conversão automática de unidades: unidades diferentes não geram rótulo de vantagem/paridade. `0` e `false` são válidos, ausência é explícita. Percentuais de confiança não aparecem sem critério validado.
+- `POST /comparacoes`: `referenceVersionId`, `competitorVersionIds` (uma versão no app), `attributeIds` e `customerProfileId` opcional. O perfil fixo `urban_premium` foi removido.
+- Resultado: `id`, `rows`, `summary`. O cliente conserva as linhas solicitadas ausentes e exibe somente os atributos selecionados. Células são associadas por `versionId`; valores explícitos `fordValue`/`competitorValue` também são aceitos. Células apenas posicionais geram erro.
+- Não há conversão automática de unidades nem vantagem inferida de um número maior. `0` e `false` são valores válidos. Estados ausentes são explícitos; percentuais de confiança não são apresentados sem critério validado.
 
-## Contrato confirmado: pesquisa livre individual
+## Paginação implementada
 
-O OpenAPI agora publica `POST /fichas-tecnicas/consultar` com `{marca, modelo, versao, atributos: string[]}` (até 50 atributos). Retorna `versaoId`, identificação/ano/mercado, `consultadoEm` e `itens` na ordem dos pedidos. Cada item inclui `termoSolicitado`, identidade canônica quando reconhecida, valor formatado, unidade, fonte, data e estado `PRESENTE`, `NAO_INFORMADO`, `NAO_DISPONIVEL` ou `ATRIBUTO_DESCONHECIDO`. O valor já é formatado; não anexar a unidade novamente.
+Veículos, versões, taxonomia e especificações retornam `{data, page, pageSize, total}`, com página inicial 1 e tamanho padrão 25. `pagination.ts` carrega todas as páginas, respeitando um tamanho menor informado pelo servidor. Arrays e envelopes legados `{data: []}` continuam aceitos como respostas completas na primeira chamada.
 
-**Ainda não integrado no mobile.** Usar esse contrato real para a ficha individual; a proposta histórica de `/pesquisas` abaixo foi superada. Não foram inventados IDs para enviar em `attributeIds`. A comparação ainda documenta apenas IDs de atributos; pesquisa livre comparativa requer decisão de integração e validação.
+O carregamento valida metadados inteiros, número e tamanho da página, total estável, quantidade esperada e identidades únicas. Página repetida, resposta truncada, mudança de total/tamanho ou falha de rede gera erro; uma lista parcial não é devolvida como completa. Há um limite explícito de 1.000 páginas. A operação inteira verifica a sessão, impedindo combinar dados de contas diferentes. Especificações de outra versão são rejeitadas.
 
-## Paginação e metadados
+Na API real, foram encontrados 8 veículos, uma versão por veículo e 23 atributos. A paginação foi exercitada com tamanhos menores: veículos em três páginas (3/3/2), taxonomia em três (10/10/3) e especificações de cada uma das 8 versões em três (10/10/3). Os metadados e identidades corresponderam ao contrato, sem duplicações. As 16 consultas diretas de veículo/versão preservaram a identidade dos registros listados.
 
-Veículos, versões, taxonomia e especificações usam `page` (inicial 1), `pageSize` (padrão 25), `total` e `data`. O cliente atual lê somente a primeira página e descarta os metadados: falta carregar páginas adicionais para garantir catálogo/ficha completos.
+## Consulta livre implementada
 
-`CellDto` confirma `versionId`, mas não declara status nem fonte/data por célula. `SpecValueDto` fornece `sourceLabel`, `evidenceIds` e `updatedAt`; este último não comprova data de coleta. Resolver proveniência com endpoints de fontes/especificações quando necessário, sem inventar metadados.
-
-## Proposta histórica pendente: comparação livre
-
-Proposta mínima a alinhar com o backend (não implementada na API): adicionar `requestedAttributes: [{ clientKey, name }]` às consultas individuais e comparações, preservando `attributeIds` existentes. O servidor normaliza nomes/sinônimos, retorna o `clientKey`, identidade canônica quando encontrada, categoria, valor, unidade, estado, fonte e data. Solicitações sem evidência retornam `not_informed` e permanecem na resposta. Limites, autorização, validação e deduplicação devem ser definidos pelo servidor. A UI de cadastro livre só deve ser ativada após essa integração funcionar de ponta a ponta.
-
-## Verificação necessária
-
-Testar login/refresh com conta de avaliação, permissões reais, respostas/estados e metadados, catálogo Raptor e integração de atributos livres. A existência do contrato não comprova o funcionamento desses fluxos. Não elevar permissões no cliente.
-
-### Request/response propostos para revisão do backend
-
-Os exemplos abaixo são **propostas, não endpoints disponíveis nem respostas observadas**. Os campos entre `<...>` devem receber identidades reais do catálogo. O `clientKey` correlaciona o pedido livre; não é enviado como `attributeId` inventado.
-
-Consulta individual proposta: `POST /pesquisas`.
+`POST /fichas-tecnicas/consultar` recebe os nomes reais da seleção e até 50 atributos:
 
 ```json
 {
-  "versionId": "<id real da versão>",
-  "attributeIds": ["<id real da taxonomia>"],
-  "requestedAttributes": [
-    { "clientKey": "pedido-1", "name": "Ajuste elétrico do banco do passageiro" }
-  ]
+  "marca": "<marca do catálogo>",
+  "modelo": "<modelo do catálogo>",
+  "versao": "<nome da versão do catálogo>",
+  "atributos": ["Ajuste elétrico do banco do passageiro"]
 }
 ```
 
-Extensão proposta de `POST /comparacoes`:
+Retorna `versaoId`, `marca`, `modelo`, `versao`, `anoModelo`, `mercado`, `consultadoEm` e `itens`. Cada item informa `termoSolicitado`, identidade canônica quando reconhecida, `valor` já formatado, unidade, fonte, data e estado. O cliente não anexa novamente a unidade ao valor formatado.
 
-```json
-{
-  "referenceVersionId": "<id real da versão Ford>",
-  "competitorVersionIds": ["<id real da concorrente>"],
-  "attributeIds": ["<id real da taxonomia>"],
-  "requestedAttributes": [
-    { "clientKey": "pedido-1", "name": "Ajuste elétrico do banco do passageiro" }
-  ]
-}
-```
+| Estado da API | Tratamento no app |
+| --- | --- |
+| `PRESENTE` | Valor confirmado; fonte e data quando fornecidas. |
+| `NAO_INFORMADO` | Mantém a solicitação sem inventar valor. |
+| `NAO_DISPONIVEL` | Indica ausência de especificação cadastrada; não comprova ausência do equipamento. |
+| `ATRIBUTO_DESCONHECIDO` | Identifica atributo não reconhecido e conserva o pedido. |
 
-Linha proposta para um pedido sem evidência em ambas as versões:
+É possível adicionar, editar e remover termos na ficha e na comparação. A seleção normaliza espaços, acentos e caixa para deduplicação; nomes e sinônimos conhecidos são associados à taxonomia. O limite combinado é de 50 atributos. Respostas são correlacionadas por `termoSolicitado`, independentemente da ordem; pedidos omitidos permanecem como não informados. Itens duplicados, extras, estados desconhecidos ou valores inválidos geram erro.
 
-```json
-{
-  "clientKey": "pedido-1",
-  "attributeId": null,
-  "canonicalName": "Ajuste elétrico do banco do passageiro",
-  "category": "comfort",
-  "cells": [
-    {
-      "versionId": "<id real da versão Ford>",
-      "value": null,
-      "unit": null,
-      "status": "not_informed",
-      "sourceLabel": null,
-      "sourceUrl": null,
-      "collectedAt": null,
-      "notes": null
-    },
-    {
-      "versionId": "<id real da concorrente>",
-      "value": null,
-      "unit": null,
-      "status": "not_informed",
-      "sourceLabel": null,
-      "sourceUrl": null,
-      "collectedAt": null,
-      "notes": null
-    }
-  ]
-}
-```
+### Identidade da versão
 
-Quando o servidor reconhecer um sinônimo, deve retornar a identidade canônica, sem perder o `clientKey` de cada solicitação. A implementação cliente deverá permitir editar/remover pedidos, normalizar espaços/acentos para detectar duplicatas exatas e confirmar equivalências semânticas apenas com o catálogo/servidor. A autorização de comparação permanece no backend; a proposta não cria privilégios novos.
+O endpoint de ficha recebe nomes, sem parâmetros de ano ou mercado. Por isso, o cliente exige que marca, modelo, versão, ano e mercado retornados correspondam à seleção completa, além do vínculo entre versão e veículo. Se o ID selecionado for UUID, `versaoId` também deve ser idêntico. Quando o catálogo usa um slug e a ficha retorna UUID, a equivalência depende da identidade completa; não é aceita apenas pela semelhança do nome.
 
-Aceite da extensão: criar um pedido fora da taxonomia, enviá-lo no processamento real, receber a linha correspondente para cada versão mesmo sem evidência, editar/remover e repetir sem duplicação. Testar comprimento/quantidade máximos definidos pelo servidor, entradas inválidas, 403, falha de rede e conflito. Esses aceites continuam pendentes.
+Uma resposta para outro ano/mercado é rejeitada. A desambiguação real desses casos ainda deve ser validada; se o servidor não resolver a seleção correta, precisará aceitar um identificador inequívoco ou filtros adicionais.
+
+As fichas reais de Ranger Raptor e Hilux, ambas BR/2024, responderam HTTP 200 e confirmaram a combinação slug no catálogo/UUID na ficha, com identidade completa coincidente. A Raptor retornou 21 atributos presentes e 2 não informados; a Hilux, 23 presentes. Dois termos adicionais fora da taxonomia foram preservados como `ATRIBUTO_DESCONHECIDO` em ambas. A evidência da Raptor está em [Validação Ranger Raptor](validacao-ranger-raptor.md). Esses testes de leitura não substituem a conferência das telas e da comparação autorizada no APK.
+
+Na interface Android, o termo “banco massageador” foi adicionado e consultado na Raptor; permaneceu visível como “Não informado” / “Atributo não reconhecido”. Categorias em português e expansão dos dados de fonte/data também foram verificadas no artefato final.
+
+### Comparação de termos livres
+
+O app primeiro valida a seleção Ford/concorrente e chama `POST /comparacoes` com IDs reais da taxonomia. Somente após a resposta autorizada consulta as duas fichas reais, uma por versão, e acrescenta as linhas dos termos livres ao resultado local. Um HTTP 403 interrompe o fluxo antes das consultas de ficha; a permissão de comparação continua sendo aplicada pelo backend.
+
+Para uma seleção composta somente de termos livres, o POST envia `attributeIds: []`. O OpenAPI permite esse array sem mínimo e não o declara obrigatório. O APK enviou essa seleção para Raptor versus Hilux, mas o perfil `SOMENTE_LEITURA` recebeu a negação de permissão, exibida como “Seu perfil não tem permissão para esta ação.”. A operação bem-sucedida dessa combinação ainda exige conta autorizada. Nenhum ID artificial é enviado. `requestedAttributes` e as chaves `requested:<termo>` pertencem à seleção/histórico local; não são extensões inventadas do contrato de comparação.
+
+A paridade entre termos livres exige o mesmo código canônico, ambos os valores confirmados e igualdade de unidade e valor. Nos demais casos, a diferença permanece indeterminada. O resumo é limitado aos atributos consultados, sem conclusões do servidor sobre atributos fora da seleção. Falhas em uma das fichas impedem apresentar a comparação como concluída. O histórico local conserva o resultado completo, inclusive os termos livres.
+
+## Proveniência e validação restante
+
+`CellDto` confirma `versionId`, mas não declara status nem fonte/data por célula. `SpecValueDto` fornece `sourceLabel`, `evidenceIds` e `updatedAt`; este último não comprova data de coleta. A ficha livre usa `fonte` e `dataCaptura` quando presentes. O app não fabrica metadados ausentes.
+
+Os 42 testes automatizados cobrem o contrato cliente, paginação, consulta livre, sessão e histórico com respostas controladas. Leituras reais, consulta livre nativa, negação da comparação pelo perfil padrão, restauração da sessão e logout persistente foram verificados. Ainda faltam o resultado comparativo com conta autorizada, histórico preenchido, troca de conta/refresh reais, demonstração completa e a referência complementar da Ranger Raptor. O perfil não foi elevado para contornar restrições. Os registros de interface, permissões, vídeo parcial e instalação final estão em [QA da Sprint 3](qa-sprint-3.md).
+
+As propostas anteriores de `POST /pesquisas` e de novos campos livres no POST de comparação foram superadas pela integração dos endpoints publicados descrita acima; não são requisitos do cliente atual.
+
+### Disponibilidade e renovação de sessão — 1.2.1
+
+Em 25/09, OpenAPI respondeu HTTP 200 no computador e no Android. Uma resposta inicial levou 16,61 s; o timeout comum é agora 30 s. O refresh da sessão de avaliação retornou HTTP 422: o cliente limpa essa sessão e volta ao login. Falhas temporárias (rede, timeout e 5xx) preservam a sessão; seus erros não são mais convertidos indevidamente em cancelamento. A rotação bem-sucedida de refresh permanece um aceite separado.

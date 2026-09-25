@@ -1,7 +1,7 @@
 {
   "name": "fordspecpulse_mobile",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "dependencies": {
     "@expo/ui": "~56.0.13",
     "@react-native-async-storage/async-storage": "2.2.0",
