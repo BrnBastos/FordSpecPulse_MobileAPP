@@ -2,8 +2,6 @@
 
 Esse é o nosso app para a Sprint 3 de **Mobile Development and IoT**, no desafio Ford da FIAP. A ideia é consultar a ficha de um carro e comparar uma versão Ford com uma concorrente, escolhendo o que a gente quer analisar.
 
-O app está na versão **1.2.1** para Android.
-
 ## Nosso grupo
 
 | Nome | RM |
