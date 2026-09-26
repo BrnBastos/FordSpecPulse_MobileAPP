@@ -1,8 +1,10 @@
 # Ford SpecPulse
 
-Ferramenta de inteligência competitiva automotiva para consultar fichas técnicas e comparar uma versão Ford com uma concorrente. Desafio 01 — Ford FIAP 2026; Sprint 3 de **Mobile Development and IoT**.
+Aplicativo Android para consultar fichas técnicas e comparar veículos Ford com concorrentes, com atributos escolhidos pelo usuário e histórico de análises.
 
-**Situação:** versão 1.2.1 com atributos livres, paginação completa, logos das sete marcas do catálogo, fotos Ford e quatro imagens geradas locais. A escala nativa foi corrigida com contêineres proporcionais; telas, abas e seletores respeitam as áreas do sistema no topo e na base. Fontes e prompts em [assets](docs/assets.md). TypeScript, lint e 42 testes aprovados. Login, catálogo, ficha e comparação real Raptor × Hilux foram verificados no APK final com a conta de avaliação autorizada. Comparações mista e somente livre, histórico após reinício, reabertura, exclusão e logout passaram. A [galeria final](docs/demonstracao-sprint-3.md) cobre as dez telas. Falta a referência complementar da Ranger Raptor. Consulte [a matriz da sprint](docs/sprint-3.md) e [QA](docs/qa-sprint-3.md).
+**FIAP · Mobile Development and IoT · Sprint 3 · Desafio Ford 01**
+
+Versão **1.2.1** · Código Android **4**
 
 ## Integrantes
 
@@ -14,101 +16,89 @@ Ferramenta de inteligência competitiva automotiva para consultar fichas técnic
 | Bruno Silva | 550416 |
 | João Hoffmann | 550763 |
 
-## Executar
+## Material para avaliação
 
-Node 20.19+ (validado com 20.20.2), npm e Android SDK/emulador ou dispositivo para validação nativa.
+| Item | Local |
+|---|---|
+| Código-fonte e instruções | Este repositório e README |
+| Aplicativo instalável | `artifacts/FordSpecPulse-1.2.1.apk` |
+| Demonstração das dez telas | [Galeria e roteiro](docs/demonstracao-sprint-3.md) |
+| Requisitos da disciplina | [Matriz da Sprint 3](docs/sprint-3.md) |
+| Testes e evidências | [Registro de validação](docs/qa-sprint-3.md) |
+
+**O APK é um arquivo local e não está incluído no Git.** Anexe-o à entrega da disciplina junto do endereço do repositório e da demonstração. O [guia de entrega](docs/entrega-sprint-3.md) identifica o pacote completo e o checksum do APK.
+
+## Instalar e acessar
+
+1. Copie o APK para um celular Android e abra o arquivo. Autorize a instalação por essa origem, caso o sistema solicite.
+2. Abra **Ford SpecPulse** com conexão à internet. O APK funciona sem Expo Go ou servidor de desenvolvimento.
+3. Entre com a **conta de avaliação fornecida pela equipe**. Login e senha devem acompanhar a entrega em campo privado para o professor.
+
+O cadastro também está disponível, mas a API define as permissões: uma conta nova pode ter acesso somente à consulta. Use a conta de avaliação para demonstrar a comparação completa.
+
+Para instalar em um emulador ou dispositivo conectado por ADB:
+
+```bash
+adb install -r artifacts/FordSpecPulse-1.2.1.apk
+```
+
+## Como usar
+
+1. **Consultar:** em **Veículos**, busque uma marca ou modelo, abra a versão e selecione atributos do catálogo ou escreva termos livres. Toque em **Consultar ficha**.
+2. **Comparar:** na aba **Comparar**, selecione a versão Ford e a concorrente, conferindo modelo, ano e mercado. Escolha até 50 atributos e toque em **Gerar comparação**.
+3. **Analisar:** confira os valores lado a lado, filtre diferenças e expanda **Fontes e observações**. Informações ausentes ou desconhecidas são identificadas na tela.
+4. **Salvar:** toque em **Salvar análise**. No **Histórico**, reabra ou exclua resultados. As análises ficam neste dispositivo, separadas por conta, e não são atualizadas automaticamente.
+5. **Sair:** acesse **Meu perfil** no Início e toque em **Sair da conta**.
+
+**Exemplo para apresentação:** Ranger Raptor 2024 BR × Toyota Hilux SRX 2024 BR, usando “Torque maximo” e o termo livre “banco massageador”. Mostre os valores, o atributo não reconhecido, o salvamento e a reabertura pelo histórico.
+
+## Executar o projeto
+
+Pré-requisitos: Node.js 20.19 ou superior, npm e ambiente Android configurado. A versão usada na validação foi Node.js 20.20.2.
 
 ```bash
 npm ci
 cp .env.example .env.local
-npm start
+npm run android
 ```
 
-`npm run android` abre o fluxo de desenvolvimento Expo; não gera o APK final. A variável `EXPO_PUBLIC_API_BASE_URL` é pública e contém apenas a URL HTTPS do serviço. Nunca inserir segredos nela.
+A configuração `EXPO_PUBLIC_API_BASE_URL` aponta para:
 
-```bash
-npm run typecheck
-npm run lint
-npm test
-npx expo install --check
-npx expo-doctor
-npx expo export --platform android --output-dir dist/android
+```text
+https://ford-spec-pulse-api.onrender.com/api
 ```
 
-O lockfile fixa a instalação. A stack preserva Expo 56.0.4, React Native 0.85.3, React 19.2.3, Expo Router 56.2.6, TypeScript 6.0.3, TanStack Query, Axios e Zustand. Tokens nativos usam Expo SecureStore; histórico usa AsyncStorage. Há avisos conhecidos do Expo Doctor documentados em QA; não foi feita migração ampla de SDK.
-
-## Uso
-
-1. Entrar com uma conta fornecida pela equipe ou usar o cadastro; o backend define as permissões do perfil.
-2. Em **Veículos**, buscar marca/modelo, abrir uma versão e escolher ou escrever os atributos. Usar **Consultar ficha** para executar a pesquisa livre.
-3. Em **Comparar**, selecionar marca, modelo/ano/mercado e versão Ford; repetir para a concorrente.
-4. Selecionar atributos por categoria ou adicionar termos livres, editar/remover pedidos e gerar a comparação (até 50 atributos).
-5. Consultar os dois valores por atributo, estados e fontes disponíveis; filtrar diferenças.
-6. Salvar e reabrir pelo Histórico; excluir uma análise ou limpar a coleção com confirmação.
-7. Abrir **Meu perfil** no Início para sair.
-
-A API decide as permissões. Um 403 informa restrição de perfil e não é contornado. Cadastro não garante permissão de comparação. Nenhuma credencial administrativa permanente é publicada neste README; a equipe deve fornecer uma conta apropriada ao avaliador.
-
-## Dados e limitações
-
-Base atual: `https://ford-spec-pulse-api.onrender.com/api`.
-
-[Contrato da API](docs/contrato-api.md) descreve endpoints, payload e validações. Falhas de rede não produzem mocks. O app separa erros de resposta vazia e oferece nova tentativa. Tokens nativos migrados do AsyncStorage são removidos dali após armazenamento seguro; no web, sessão fica apenas em memória.
-
-`0` e `false` são valores válidos. “Não informado” não significa ausência confirmada. Conflito e validação pendente permanecem explícitos. Unidades diferentes não produzem uma vantagem calculada no cliente. Sem fonte/data/critério de confiança fornecido, o app não inventa metadados nem percentuais.
-
-A ficha individual e a comparação aceitam termos livres por meio de `/fichas-tecnicas/consultar`. Pedidos desconhecidos e dados ausentes permanecem visíveis; o valor formatado pelo servidor não recebe unidade duplicada. A comparação executa primeiro `/comparacoes`, respeitando suas permissões, e consulta uma ficha por veículo para os termos livres. A comparação real com torque e o termo livre “banco massageador” foi verificada no APK final: o pedido desconhecido permanece explícito, sem valor inventado. A consulta livre confirma marca/modelo/versão/ano/mercado antes de exibir valores.
-
-Veículos, versões, atributos e especificações carregam todas as páginas informadas pela API. Respostas parciais ou inconsistentes produzem erro com nova tentativa, sem exibir dados incompletos como ficha final.
-
-O histórico guarda snapshots versionados, com data, seleção e nomes de versões, separados por usuário. Não é sincronizado remotamente. O registro global legado `lastComparison` não é atribuído a nenhuma conta, pois sua autoria é desconhecida. Arquivos inválidos geram erro recuperável e opção de limpeza.
-
-[Validação Ranger Raptor](docs/validacao-ranger-raptor.md): identidade BR/2024 e 23 atributos consultados na API, com 21 presentes e 2 não informados. Falta o slide complementar para conferir a exatidão e a equivalência exigidas pelo avaliador. Uma página provisória do modelo 2026 não substitui essa referência.
-
-## APK de release
-
-APK atual: [FordSpecPulse-1.2.1.apk](artifacts/FordSpecPulse-1.2.1.apk) (arquivo local, ignorado pelo Git). Release assinado usando Render, instalado no Android 16. Na 1.2.1, foram conferidos áreas seguras, teclado e retorno ao login após refresh rejeitado. Restauração autenticada, histórico persistente e logout após reinício foram confirmados no APK final em 26/09. Checksum e verificações estão em [QA](docs/qa-sprint-3.md).
-
-A cota gratuita de builds Android EAS foi esgotada. A alternativa local usa o mesmo perfil e assinatura:
-
-```bash
-ANDROID_HOME="$HOME/Library/Android/sdk" eas build --platform android --profile sprint3 --local --output artifacts/FordSpecPulse-1.2.1.apk
-```
-
-Requer Java 17, Android SDK/NDK e acesso à conta EAS para recuperar a assinatura. Nenhuma chave é incluída no repositório. O estado e o checksum da geração local estão em [QA](docs/qa-sprint-3.md).
+O comando acima inicia o ambiente de desenvolvimento. Para gerar um APK com o perfil de entrega, é necessário acesso ao projeto e à assinatura no EAS:
 
 ```bash
 npx eas-cli build --platform android --profile sprint3
 ```
 
-Projeto [bbastos/FordSpecPulse_Mobile](https://expo.dev/accounts/bbastos/projects/FordSpecPulse_Mobile), pacote `com.brnbastos.fordspecpulse`, versão 1.2.1 / código Android 4. Perfil `sprint3`: distribuição interna, APK, sem development client. A build embarca o bundle e deve iniciar sem Metro/Expo Go. Credenciais de assinatura são gerenciadas pelo EAS.
+## Organização e tecnologias
 
-O APK anterior 1.1.0 usava Railway e foi substituído como entrega. Suas capturas e manifesto permanecem históricos. A build concluída não equivale à validação integral dos fluxos autenticados.
+React Native, Expo SDK 56, TypeScript e Expo Router. Integração HTTP com Axios e TanStack Query; estado com Zustand; sessão nativa em SecureStore e histórico em AsyncStorage.
 
-## Estrutura
+| Pasta | Responsabilidade |
+|---|---|
+| `src/app/` | Telas e navegação |
+| `src/components/` | Componentes visuais compartilhados |
+| `src/services/` | API, autenticação, consultas e histórico |
+| `src/store/` | Estado da comparação |
+| `assets/images/` | Imagens e identidade visual |
+| `tests/` e `docs/` | Testes e documentação da entrega |
 
-```text
-src/app/                 Rotas, autenticação, catálogo, comparação e histórico
-src/components/          Componentes compartilhados e seletores
-src/constants/           Tokens visuais
-src/services/auth.ts     Sessão, SecureStore, cliente HTTP e refresh
-src/services/adapters.ts Normalização de especificações/comparação
-src/services/history.ts  Persistência por usuário
-src/services/specpulseApi.ts  Serviços de domínio e validação
-src/services/technicalSheets.ts  Pesquisa livre e validação de identidade
-src/services/pagination.ts   Leitura completa e consistente de listas
-src/store/               Estado da seleção e resultado atual
-tests/                   Testes comportamentais, fixtures isoladas
-docs/                    Matriz, contrato, validação e QA
-assets/images/           Assets do produto
+## Validação e limitações
+
+**42 testes aprovados**, além das verificações de TypeScript e lint. No APK final, instalado no Android 16, foram validados autenticação, consulta, comparação com atributos do catálogo e livres, duas análises salvas, persistência após reinício, reabertura, exclusão e saída da conta. A galeria registra as dez telas.
+
+```bash
+npm run typecheck
+npm run lint
+npm test
 ```
 
-## Demonstração
+- Consultas e comparações dependem da API e de internet. Em falhas de conexão, o app permite tentar novamente.
+- Dados ausentes não são tratados como ausência confirmada de equipamento; fontes e estados de validação disponíveis são exibidos.
+- **Pendência de aceite:** falta o slide complementar da Ranger Raptor para conferir integralmente os atributos exigidos como referência. [Detalhes da conferência](docs/validacao-ranger-raptor.md).
 
-[Roteiro e cobertura das dez telas](docs/demonstracao-sprint-3.md) · [Pacote e instruções de entrega](docs/entrega-sprint-3.md). A matriz distingue os requisitos literais do PDF dos cenários adicionais de QA.
-
-Roteiro: abrir APK → entrar → consultar Ranger Raptor exata → escolher atributos → selecionar concorrente → comparar → ver fontes/diferenças → salvar → reabrir Histórico → sair. Demonstrar também vazio, rede indisponível e permissão negada. Capturas reais e limitações estão na [galeria](docs/screenshots/README.md). O vídeo de até seis minutos é exigência da Sprint 4; a demonstração das telas permanece parte da Sprint 3.
-
-[Vídeo de consulta na versão anterior 1.2.0](artifacts/FordSpecPulse-1.2.0-consulta.mp4) — cerca de 20 segundos. É uma evidência parcial de consulta; não substitui a demonstração completa da sprint.
-
-As quatro ilustrações geradas são decorativas, locais e leves; [prompts e origem](docs/assets.md). As telas técnicas priorizam valores e mantêm fontes sob expansão.
+[Contrato da API](docs/contrato-api.md) · [Origem e créditos das imagens](docs/assets.md)
