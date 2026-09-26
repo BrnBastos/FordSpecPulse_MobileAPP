@@ -27,7 +27,7 @@
     },
     "evaluationReferenceValidated": false,
     "queriedAt": "2026-09-25T15:17:43.452395842Z",
-    "queriedAtBasis": "server consultadoEm",
+    "queriedAtBasis": "campo consultadoEm do servidor",
     "endpoint": "https://ford-spec-pulse-api.onrender.com/api/fichas-tecnicas/consultar",
     "method": "POST",
     "status": 200

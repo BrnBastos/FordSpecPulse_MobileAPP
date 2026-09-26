@@ -1,26 +1,25 @@
 # Sprint 3 — Mobile Development and IoT
 
-Estado da versão **1.2.0**, atualizado em 25/09/2026. Escopo: Desafio 01 — Ford, sem declarar conclusão das demais disciplinas.
+Versão **1.2.1 / código Android 4**, revisada em 26/09/2026. Código do aplicativo: commit `0aaf14e`. Escopo: Desafio 01 do `Ford_V2.pdf`, páginas 5 e 13.
 
-Fonte: `Ford_V2.pdf`, recebido em 21/09/2026, 21 páginas. As páginas 4–5 e 13 foram conferidas visualmente. A página 5 descreve a consulta livre e o caso Ranger Raptor; a página 13 exige os fluxos funcionais, identidade visual, organização/documentação, demonstração de todas as telas e APK instalado. Entrega indicada: 27/09. O vídeo de até seis minutos pertence à Sprint 4, página 19.
+## Requisitos expressos no PDF
 
-| Requisito | Implementação atual | Evidência e aceite restante |
-| --- | --- | --- |
-| Seleção real de veículos/versões | Seletores pesquisáveis, marca/modelo/ano/mercado/versão e validação Ford/concorrente. | Catálogo e navegação verificados; Raptor versus Hilux selecionadas corretamente no APK. |
-| Atributos livres e ficha individual | Adicionar, editar e remover termos, deduplicar e preservar ausentes; até 50 atributos. Usa o endpoint real de ficha. | Leituras autenticadas Raptor/Hilux aprovadas; consulta livre no APK manteve o termo desconhecido e sua fonte expansível. |
-| Catálogo e ficha completos | Paginação de veículos, versões, taxonomia e especificações; rejeição de respostas inconsistentes. | 42 testes no total e paginação real com múltiplas páginas aprovada. |
-| Comparação | Autorização por `/comparacoes`, seguida das duas fichas para termos livres; identidades, unidades e estados preservados. | Perfil padrão negou a ação no APK com mensagem de permissão. Falta conta autorizada para validar resultado real. |
-| Sessão e histórico | SecureStore, refresh compartilhado, proteção contra respostas de outra conta; snapshots por usuário e reabertura/exclusão. | Login real, restauração da sessão, logout persistente após reinício e histórico vazio verificados; histórico preenchido depende do resultado autorizado. Troca de conta/refresh reais ainda pendentes. |
-| Ranger Raptor | Identidade BR/2024 real, 23 atributos consultados: 21 presentes e 2 não informados. | [Matriz e evidências](validacao-ranger-raptor.md); falta slide complementar para conferir todos os requisitos do avaliador. |
-| Identidade visual | Tema claro azul/navy, quatro abas, controles compartilhados, fontes sob expansão e duas imagens geradas locais. | Telas públicas em três larguras/fonte ampliada; Início, catálogo, veículo, versão, histórico vazio e perfil autenticados verificados. |
-| Código e README | Serviços de sessão, paginação, fichas e histórico separados; contrato e instruções atualizados. | TypeScript, lint, 42 testes e exports aprovados; avisos de dependências documentados em QA. |
-| APK instalado | Release local assinado 1.2.0/code 3, usando Render; cota EAS cloud esgotada. | APK final instalado e aberto sem Metro/Expo Go; reinício restaurou a sessão. [Metadados e QA](qa-sprint-3.md). |
-| Demonstração de todas as telas | Galeria separa versão atual e histórico; vídeo curto da consulta real no APK final disponível. | Evidência parcial: faltam conclusão/capturas do fluxo autorizado de comparação e histórico preenchido. |
+| Requisito | Página | Implementação e evidência | Aceite restante |
+|---|---:|---|---|
+| Entrada com marca, modelo, versão e atributos definidos livremente | 5 | Seletores pesquisáveis e inclusão/edição/remoção de termos; consulta individual real verificada. | Percurso final aprovado em 26/09, incluindo comparação mista e somente livre. |
+| Lista técnica padronizada, comparável e com ausências explícitas | 5 | Fichas com identidade, valores, unidades, estados e fontes; paginação completa; `0` e `false` preservados. | Conferir a cobertura dos atributos da referência Raptor. |
+| Validação com as especificações do slide Ranger Raptor | 5 | Inventário real BR/2024 com 23 atributos, 21 presentes e 2 não informados. | **Pendente:** obter o slide de referência e confrontar todos os itens. |
+| Aplicação final com os fluxos do desafio funcionando | 13 | Consulta, seleção, comparação e histórico implementados; 42 testes aprovados. | Comparação real, salvar/reiniciar/reabrir/excluir e logout aprovados no APK final. |
+| Identidade visual consistente | 13 | Componentes compartilhados, tema Ford, quatro ilustrações geradas, sete logos, fotos Ford, escala das imagens e áreas seguras. | Dez telas e seletor conferidos no Android 16; evidências na galeria final. |
+| Código organizado, README completo e demonstração visual de todas as telas | 13 | README, serviços separados, galeria e [roteiro por tela](demonstracao-sprint-3.md). | [Galeria final](demonstracao-sprint-3.md) completa com as dez telas, resultado real e histórico preenchido. |
+| APK final via EAS ou equivalente, instalado e executado | 13 | APK assinado 1.2.1, build local equivalente, instalado no Android 16 sem Metro/Expo Go; checksum e fontes verificados. | Arquivo preparado para entrega conforme o canal da disciplina. |
 
-A conta temporária de QA foi criada pelo cadastro normal com perfil `SOMENTE_LEITURA`, sem alterar permissões. Os checks diretos da API e os checks do APK são registrados separadamente. Não há modo demo nem dados fictícios no produto.
+[QA e evidências](qa-sprint-3.md) · [Raptor](validacao-ranger-raptor.md) · [Entrega](entrega-sprint-3.md).
 
-A configuração, geração do APK, instalação e aprovação dos fluxos são aceites distintos. A sprint permanece parcialmente validada enquanto faltarem a referência Raptor e a demonstração dos fluxos pendentes. Consulte [QA](qa-sprint-3.md), [revisão atual](revisao-sprint-3.md) e [contrato](contrato-api.md).
+## Cenários adicionais do prompt de implementação
 
-## Histórico resumido
+Salvar duas análises, reiniciar/reabrir/excluir, testar troca de conta e refresh são cenários de aceite definidos no prompt de implementação. Não são itens literais da página 13. Ajudam a verificar os fluxos que o produto oferece.
 
-A implementação 1.1.0, de 21/09, usava Railway; suas falhas de conexão e capturas públicas não descrevem a versão atual. A revisão `c3f6ba3` identificou paginação e atributos livres ainda ausentes. Esses pontos foram implementados em 1.2.0 com o contrato Render e testados; os aceites abertos são os da matriz acima.
+O PDF pede APK e demonstração visual, mas não exige hospedagem pública, publicação na Play Store, validação iOS ou um vídeo de seis minutos para esta sprint. O vídeo de até seis minutos pertence à Sprint 4, página 19.
+
+A conta usada anteriormente recebeu `SOMENTE_LEITURA` no cadastro normal e a comparação retornou HTTP 403. Não houve alteração de permissões nem simulação de resultados. Em 26/09, a conta original de avaliação foi autorizada pelo responsável e concluiu os fluxos de comparação e histórico no APK final.

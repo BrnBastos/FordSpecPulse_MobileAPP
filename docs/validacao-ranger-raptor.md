@@ -62,3 +62,7 @@ A [página Ford Brasil para Raptor 3.0 V6 Bi-turbo 4WD AT 2026](https://www.ford
 ## Aceite restante
 
 Receber o slide complementar, confirmar se o caso exigido corresponde à identidade 2024/BR encontrada e comparar cada atributo requerido — incluindo qualquer atributo ausente desta taxonomia — por valor, unidade, estado e fonte. Registrar diferenças sem corrigir dados por suposição. Nenhum veículo sintético foi criado no catálogo; os testes automatizados não comprovam exatidão automotiva.
+
+## Material complementar examinado em 26/09/2026
+
+A apresentação local `Ford_SpecPulse_Twin_Apresentacao.pptx` menciona a planilha `FIAP-Ford Data sheet Desafio 01 v02.xlsx`. O slide 7 descreve Ranger 26MY nas versões XLT, Limited e Limited+; o slide 19 apresenta um exemplo Limited+. Isso não comprova a referência Ranger Raptor exigida na página 5 do PDF. A planilha citada não foi encontrada nas pastas locais examinadas. A identidade e os atributos da referência continuam pendentes.

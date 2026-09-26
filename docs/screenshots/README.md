@@ -1,5 +1,9 @@
 # Capturas do aplicativo
 
+## APK final 1.2.1 — percurso autorizado de 26/09
+
+A [galeria completa das dez telas](../demonstracao-sprint-3.md) registra login, catálogo, ficha, comparação mista/somente livre, duas análises persistidas após reinício, reabertura, exclusão e logout. Capturas em `1.2.1-final/`, Android 16 / aproximadamente 411 dp / fonte 1.15. As seções abaixo preservam evidências anteriores e seus limites.
+
 ## Versão 1.2.1 — imagens e áreas seguras
 
 APK release no Pixel_9 / Android 16. As imagens de 360 dp registram a revisão de proporção das imagens, antes da correção das áreas seguras. As capturas de Início em 412 dp / fonte 1.3 incluem as áreas seguras atualizadas.
@@ -35,7 +39,7 @@ As telas públicas e a consulta livre foram capturadas na primeira build 1.2.0. 
 | Histórico vazio e perfil | [Histórico](1.2.0/historico-vazio.png), [Perfil](1.2.0/perfil.png) |
 | Logout persistido após reinício | [Login final](1.2.0/login-final-393dp.png) |
 
-[Resultados autenticados](1.2.0/authenticated-results.json). [Vídeo local de consulta](../../artifacts/FordSpecPulse-1.2.0-consulta.mp4), aproximadamente 20 segundos, gravado no APK final. O vídeo cobre catálogo, Raptor, ficha e fonte; é uma prévia de revisão. Resultado, histórico preenchido e demonstração completa dependem de uma conta com permissão de comparação.
+[Resultados autenticados](1.2.0/authenticated-results.json). [Vídeo local de consulta](../../artifacts/FordSpecPulse-1.2.0-consulta.mp4), aproximadamente 20 segundos, gravado no APK final. O vídeo cobre catálogo, Raptor, ficha e fonte; é uma prévia de revisão. Essas lacunas históricas foram cobertas pela galeria final 1.2.1 acima.
 
 ## Evidência histórica — 1.1.0
 
@@ -50,3 +54,7 @@ Build `0086b06a-1af3-4433-9d1e-606eec6190db`, instalada no Pixel_9 / Android 16.
 A verificação inclui botões de envio desabilitados com campos vazios, ação acessível com teclado, dispensa do teclado pelo botão Voltar e retorno ao login pelo link.
 
 As imagens históricas de 1.1.0 comprovam somente os fluxos públicos daquela versão.
+
+## Idioma dos registros
+
+Descrições e resultados de validação estão em português brasileiro. Chaves JSON, comandos, nomes de arquivos e identificadores técnicos são preservados. As respostas brutas da API e os metadados extraídos do APK mantêm o formato original para permitir auditoria.

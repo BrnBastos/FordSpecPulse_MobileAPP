@@ -5,31 +5,31 @@
     {
       "widthDp": 360,
       "fontScale": "1.3",
-      "login": "pass",
-      "registration": "pass",
-      "keyboardActionReachable": "pass",
-      "androidBack": "pass"
+      "login": "aprovado",
+      "registration": "aprovado",
+      "keyboardActionReachable": "aprovado",
+      "androidBack": "aprovado"
     },
     {
       "widthDp": 393,
       "fontScale": "1.0",
-      "login": "pass",
-      "registration": "pass",
-      "keyboardActionReachable": "pass",
-      "androidBack": "pass"
+      "login": "aprovado",
+      "registration": "aprovado",
+      "keyboardActionReachable": "aprovado",
+      "androidBack": "aprovado"
     },
     {
       "widthDp": 412,
       "fontScale": "1.0",
-      "login": "pass",
-      "registration": "pass",
-      "keyboardActionReachable": "pass",
-      "androidBack": "pass"
+      "login": "aprovado",
+      "registration": "aprovado",
+      "keyboardActionReachable": "aprovado",
+      "androidBack": "aprovado"
     }
   ],
   "restored": {
     "size": "1080x1400",
-    "density": "reset",
+    "density": "restaurada",
     "font": "1.15",
     "keyboard": "0"
   }

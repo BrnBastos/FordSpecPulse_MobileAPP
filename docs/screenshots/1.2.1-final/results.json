@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-26",
+  "version": "1.2.1",
+  "androidVersionCode": 4,
+  "apkSha256": "83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0",
+  "device": "Pixel_9 / Android 16",
+  "screenPx": [
+    1080,
+    2424
+  ],
+  "density": 420,
+  "fontScale": 1.15,
+  "accountUse": "Conta original de avaliação, com uso autorizado explicitamente pelo responsável",
+  "checks": {
+    "nativeLogin": "aprovado",
+    "catalogAndRaptorSheet": "aprovado",
+    "mixedComparison": "aprovado",
+    "freeOnlyComparison": "aprovado",
+    "unknownAttributeRetained": "aprovado",
+    "saveTwoAnalyses": "aprovado",
+    "historyAfterRestart": "aprovado",
+    "reopenAnalysis": "aprovado",
+    "deleteOnePreservesOther": "aprovado",
+    "logoutAfterRestart": "aprovado",
+    "tenScreenGallery": "aprovado",
+    "selectorSafeArea": "aprovado"
+  },
+  "remainingPdfAcceptance": [
+    "Conferir todos os atributos da Ranger Raptor com o slide de referência ainda não fornecido"
+  ],
+  "additionalNativeQaNotRepeated": [
+    "Troca de conta e isolamento do histórico entre contas",
+    "Renovação bem-sucedida do token"
+  ]
+}

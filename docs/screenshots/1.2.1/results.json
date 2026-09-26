@@ -2,17 +2,17 @@
   "version": "1.2.1",
   "versionCode": 4,
   "apkSha256": "83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0",
-  "device": "Pixel_9 emulator, Android 16 / API 36",
+  "device": "Emulador Pixel_9, Android 16 / API 36",
   "checks": {
-    "typecheck": "passed",
-    "lint": "passed",
+    "typecheck": "aprovado",
+    "lint": "aprovado",
     "behaviorTests": 42,
-    "nativeRejectedRefreshReturnsToLogin": "passed on final APK",
-    "login360dpFont1_3": "passed",
-    "keyboardActionsReachable360dpFont1_3": "passed by scrolling",
-    "registration360dpFont1_3": "passed",
-    "home412dpFont1_3Gestures": "passed; identical layout in final APK",
-    "home412dpFont1_3ThreeButtonNavigation": "passed; identical layout in final APK"
+    "nativeRejectedRefreshReturnsToLogin": "aprovado no APK final",
+    "login360dpFont1_3": "aprovado",
+    "keyboardActionsReachable360dpFont1_3": "aprovado com rolagem",
+    "registration360dpFont1_3": "aprovado",
+    "home412dpFont1_3Gestures": "aprovado; disposição visual idêntica no APK final",
+    "home412dpFont1_3ThreeButtonNavigation": "aprovado; disposição visual idêntica no APK final"
   },
   "measuredInsets412dpPixels": {
     "statusBarBottom": 142,
@@ -23,9 +23,9 @@
     "threeButtonTabLabelBottom": 2298
   },
   "limits": [
-    "No iOS device validation.",
-    "Selector modal safe-area change is implemented but not rechecked natively after the existing session was rejected.",
-    "360 dp catalog/vehicle/selector captures predate the safe-area changes; see gallery.",
-    "No new credential-based login was performed during the availability check."
+    "Sem validação em dispositivo iOS.",
+    "A área segura do seletor modal foi implementada, mas não foi verificada novamente no aplicativo nativo nesta etapa após a rejeição da sessão existente.",
+    "As capturas de catálogo, veículo e seletor em 360 dp são anteriores às alterações de área segura; consulte a galeria.",
+    "Nenhuma nova autenticação com credenciais foi realizada durante a verificação de disponibilidade."
   ]
 }

@@ -1,37 +1,29 @@
-# Revisão da tarefa — 25/09/2026
+# Revisão da entrega — 26/09/2026
 
-A versão **1.2.0 / código Android 3** implementa o plano: atributos livres, paginação completa e duas imagens geradas discretas. O APK local assinado usa Render. TypeScript, lint, 40 testes e exports Android/web foram aprovados.
+Versão **1.2.1 / código Android 4**, aplicação no commit `0aaf14e`. Requisitos do PDF e cenários adicionais do prompt estão separados na [matriz da sprint](sprint-3.md).
 
-## O que foi concluído
+## Concluído
 
-- Inclusão, edição, remoção e deduplicação de termos na ficha e comparação, até 50 atributos. Dados ausentes ou desconhecidos permanecem visíveis.
-- Comparação com autorização do endpoint existente antes de consultar as duas fichas. `attributeIds: []` é permitido pelo esquema para seleção somente livre; sua operação autorizada ainda precisa de evidência nativa.
-- Identidade completa de marca/modelo/versão/ano/mercado, com tratamento dos IDs slug/UUID; preservação de estados, valores, unidades e fontes disponíveis.
-- Paginação de todos os quatro endpoints, sem devolver respostas truncadas, repetidas ou misturadas entre contas.
-- Imagens locais no cabeçalho do login e histórico vazio; seleção compacta com busca, chips e expansão.
-- Build local release após esgotamento da cota EAS cloud. Artefato, assinatura e manifestação das fontes em [QA](qa-sprint-3.md).
+- Seleção real de veículos/versões; termos livres editáveis; fichas padronizadas com ausências explícitas e fontes disponíveis.
+- Paginação dos quatro catálogos, validação de identidade e autorização da comparação preservada.
+- Histórico por usuário, com snapshots, reabertura e exclusão implementados.
+- Quatro ilustrações geradas, sete logos, fotografias Ford, imagens proporcionais e áreas seguras nativas.
+- Tratamento do refresh rejeitado com HTTP 422 e preservação da sessão em falhas temporárias; timeout de 30 segundos.
+- TypeScript, lint e 42 testes aprovados. APK assinado instalado no Android 16, com checksum e manifesto das fontes registrados.
+- Documentação atualizada, [roteiro de demonstração](demonstracao-sprint-3.md) e [instruções de entrega](entrega-sprint-3.md).
 
-## Evidências reais
+## Evidência e limites
 
-Uma conta temporária foi cadastrada pelo fluxo normal, com perfil padrão `SOMENTE_LEITURA`, sem alteração de permissões. A API retornou 8 veículos, 8 versões e 23 atributos. As 16 consultas diretas preservaram as identidades; paginação de veículos, taxonomia e especificações foi exercitada em múltiplas páginas.
+As consultas reais anteriores retornaram oito veículos, oito versões e 23 atributos. A ficha Raptor tem 21 valores presentes e dois consumos não informados. A consulta livre manteve pedidos não reconhecidos. Login, consulta, restauração de sessão, logout e negação de comparação foram registrados na versão 1.2.0.
 
-As fichas da Ranger Raptor e Hilux BR/2024 responderam HTTP 200. A Raptor tem 21 valores presentes e dois consumos não informados; termos adicionais desconhecidos permaneceram na resposta. O [inventário Raptor](validacao-ranger-raptor.md) preserva as 23 linhas e evidências sanitizadas; a referência do avaliador continua ausente.
+Na 1.2.1, foram verificados escala de imagens, áreas seguras, navegação por gestos/três botões, fonte ampliada e teclado. O APK final retornou ao login após rejeição do refresh. Em 26/09, a conta original de avaliação autorizada permitiu repetir o percurso no APK final: comparação mista e somente livre, duas análises salvas, reinício, reabertura, exclusão individual e logout. A galeria atual cobre as dez telas.
 
-No APK, as telas públicas de login/cadastro, teclado/Voltar e botões vazios foram verificadas em 360/393/412 dp, incluindo fonte ampliada. Login real, Início, catálogo, veículo, versão, histórico vazio e perfil funcionaram. A consulta livre de “banco massageador” preservou o pedido como não reconhecido, com fonte expansível. A seleção Raptor versus Hilux foi mantida; gerar comparação com o perfil padrão apresentou “Seu perfil não tem permissão para esta ação.”, sem contornar a restrição.
+## Pendências para concluir o aceite do PDF
 
-O APK final foi instalado com sucesso e o reinício a frio restaurou a sessão. Logout seguido de encerramento forçado/reinício permaneceu no login; a negação da comparação somente livre foi repetida neste mesmo artefato. Categorias em português, fontes/datas, perfil traduzido e catálogo compacto foram conferidos; as capturas finais correspondentes foram atualizadas. Essa verificação autenticada não amplia os testes de três larguras para todas as telas internas. Um vídeo curto da consulta real foi gravado, como evidência parcial.
+| Pendência | Dependência concreta | Trabalho necessário |
+|---|---|---|
+| Conferência exata da Ranger Raptor | Slide complementar com atributos, versão, ano e mercado de referência. | Confrontar cada item com a saída real e corrigir eventuais divergências na origem dos dados. |
 
-## Aceites ainda abertos
+O cadastro normal anterior forneceu perfil `SOMENTE_LEITURA`; a validação atual usou a conta de avaliação existente, sem elevar permissões. A referência complementar não foi localizada nos arquivos Ford examinados. Nenhum dado fictício foi acrescentado para preencher evidências ausentes.
 
-| Item | Próximo passo |
-| --- | --- |
-| Comparação autorizada no APK | Fornecer uma conta com permissão de comparação para testar resultado real, inclusive termos livres/mistos e `attributeIds: []`. Consulta livre e negação do perfil padrão já foram verificadas. |
-| Histórico preenchido e sessão | Salvar duas análises reais, reiniciar, reabrir/excluir e confirmar isolamento entre contas e refresh real. Restauração da sessão e logout persistente após reinício aprovados; os testes automatizados cobrem as demais proteções. |
-| Ranger Raptor versus referência | Receber o slide complementar e conferir todos os atributos requeridos, além de confirmar a equivalência com o caso BR/2024 encontrado. |
-| Demonstração de todas as telas | Completar capturas de resultado e histórico preenchido e a demonstração integral com conta autorizada. O APK final já foi instalado e verificado, com hash registrado em QA. |
-
-Os detalhes do contrato estão em [contrato-api.md](contrato-api.md). A API acessível e o APK instalado não substituem esses aceites.
-
-## Histórico
-
-A revisão `c3f6ba3` tinha 20 testes e encontrou atributos livres e paginação incompletos; ambos foram implementados nesta etapa. O APK 1.1.0 de 21/09 usava Railway e permanece apenas como evidência histórica. A entrega atual é 1.2.0/Render; não houve modo demo, alteração de perfil ou commit nesta etapa.
+Detalhes: [QA](qa-sprint-3.md), [contrato](contrato-api.md) e [validação Raptor](validacao-ranger-raptor.md).

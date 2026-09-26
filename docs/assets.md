@@ -9,28 +9,30 @@ Criadas em 25/09/2026 com o recurso integrado `imagegen` (sem CLI/API alternativ
 
 Os dois arquivos são locais, não exigem rede e não participam da leitura por tecnologias assistivas. Exportados em JPEG com qualidade 84 e dimensões reduzidas; nenhum ativo anterior foi substituído. Imagens originais preservadas em `~/.codex/generated_images/01a0d915-dcd1-7310-8649-3dd777ec812b/`.
 
-## Prompt — login
+Os textos de geração abaixo são traduções para pt-BR das instruções utilizadas originalmente.
+
+## Instruções de geração — entrada
 
 ```text
-Use case: stylized-concept.
-Asset type: a compact decorative banner for a vehicle specification mobile app login.
-Primary request: understated automotive editorial artwork, landscape 3:1 composition. One generic unbranded midnight blue contemporary pickup in a quiet studio, viewed from rear three-quarter angle, sculptural smooth body, subtle electric blue rim light. Restrained sophisticated semi-realistic 3D illustration, carefully shaped lighting, clean surfaces, soft reflections.
-Scene/backdrop: seamless dark navy (#001F54) studio with a barely visible floor and generous empty navy space. No scenery or drama. Vehicle occupies the center-right half with breathing space all around; much of the image remains clean navy.
-Color palette: navy, cobalt blue, cool silver accents.
-Constraints: this is decorative fiction, not a specific model. No logos, no badges, no recognizable grille branding, no people, no text, no letters, no numbers, no watermarks, no UI. Clean and beautiful, not busy. Wide composition suitable at 312 by 104 points in a mobile app.
+Caso de uso: conceito estilizado.
+Tipo de imagem: faixa decorativa compacta para a tela de entrada de um aplicativo móvel de especificações de veículos.
+Pedido principal: ilustração editorial automotiva discreta, em composição horizontal 3:1. Uma picape contemporânea genérica, sem marca, azul-meia-noite, em estúdio tranquilo, vista em três quartos pela traseira. Carroceria esculpida e suave, com iluminação de contorno azul-elétrico sutil. Ilustração 3D semirrealista sofisticada, iluminação cuidadosa, superfícies limpas e reflexos suaves.
+Cenário: estúdio contínuo azul-marinho escuro (#001F54), piso quase imperceptível e bastante espaço vazio. Sem paisagem ou efeitos dramáticos. Veículo na metade central direita, com margens livres ao redor; boa parte da imagem permanece azul-marinho.
+Paleta: azul-marinho, azul-cobalto e detalhes em prata fria.
+Restrições: ficção decorativa, sem representar modelo específico. Sem logotipos, emblemas, identificação de marca na grade, pessoas, textos, letras, números, marcas-d'água ou interface. Visual limpo, bonito e sem excesso de elementos. Composição adequada a 312 × 104 pontos em aplicativo móvel.
 ```
 
-## Prompt — histórico
+## Instruções de geração — histórico
 
 ```text
-Use case: stylized-concept.
-Asset type: small decorative empty-history illustration for a professional vehicle specification comparison mobile app.
-Primary request: two pristine overlapping porcelain white data sheets, sculpted as simple smooth paper slabs with a few short cobalt-blue recessed horizontal bars suggesting specifications, sitting over a faint oval shadow. One small cobalt rounded tab is tucked behind them. Gentle isometric perspective, refined semi-realistic 3D editorial style matching a clean navy and blue automotive app.
-Scene/backdrop: pure white seamless backdrop, generous empty white space, centered modest subject.
-Composition: landscape 3:2. Whole subject has large margins; keep the shape clear at 180 pixels wide.
-Lighting: soft studio daylight, very subtle contact shadows, quiet elegant mood.
-Palette: white, navy #001F54, cobalt #0057B8, faint cool grey. Matte ceramic and paper textures, no metallic shine.
-Constraints: decorative artwork, no actual charts or factual data, no cars, no checkmarks, no people, no magnifying glass, no extra floating objects, no text, no letters, no numbers, no logos, no watermarks, no UI. Minimal and clean.
+Caso de uso: conceito estilizado.
+Tipo de imagem: ilustração decorativa pequena para o histórico vazio de um aplicativo profissional de comparação de especificações de veículos.
+Pedido principal: duas fichas brancas sobrepostas, com aparência de porcelana, esculpidas como folhas lisas e simples. Algumas barras horizontais curtas em baixo-relevo azul-cobalto sugerem especificações. Sombra oval discreta abaixo e uma pequena aba arredondada azul-cobalto atrás. Perspectiva isométrica suave e estilo editorial 3D semirrealista refinado, combinando com um aplicativo automotivo azul-marinho e azul.
+Cenário: fundo branco contínuo, bastante espaço livre e objeto centralizado de tamanho moderado.
+Composição: horizontal 3:2, com margens amplas. Silhueta legível com 180 pixels de largura.
+Iluminação: luz suave de estúdio, sombras de contato discretas, atmosfera tranquila e elegante.
+Paleta: branco, azul-marinho #001F54, cobalto #0057B8 e cinza frio suave. Texturas foscas de cerâmica e papel, sem brilho metálico.
+Restrições: imagem decorativa, sem gráficos reais, dados factuais, carros, marcas de confirmação, pessoas, lupa, objetos flutuantes extras, textos, letras, números, logotipos, marcas-d'água ou interface. Visual mínimo e limpo.
 ```
 
 ## Logos e fotografias — atualização 1.2.1
@@ -53,16 +55,27 @@ Criados com o recurso integrado `imagegen`; originais em `~/.codex/generated_ima
 | `assets/images/home-automotive-generated-v1.jpg` | Início | Picape azul em paisagem ao amanhecer, acima das ações principais. |
 | `assets/images/compare-automotive-generated-v1.jpg` | Comparar | Duas picapes em estúdio, no cabeçalho anterior à seleção. |
 
-### Prompt — home
+### Instruções de geração — início
 
 ```text
-Use case: stylized-concept. Asset type: compact 3:1 decorative banner for the Home screen of Ford SpecPulse, a clean navy and blue vehicle specification app. Create refined semi-realistic automotive editorial artwork matching a midnight-blue studio pickup login banner. Subject: one unbranded metallic deep-blue modern crew-cab pickup, rear three-quarter view, parked on a smooth pale stone overlook; distant layered blue mountains and a soft dawn sky. Sophisticated realistic 3D photography, precise sculpted body, restrained cool reflections, tranquil and premium. Wide 3:1 composition, whole truck centered slightly right and fully inside the frame with generous margins; vehicle takes about one third of width, strong silhouette readable at 350 by 116 points. Navy #001F54, cobalt #0057B8 and misty blue-grey palette. Quiet, minimal scenery with empty space and a subtle horizon. No text, no letters, no logos, no badges, no watermarks, no people, no UI, no charts, no dramatic dust. This is decorative concept artwork, not a claimed photograph of any exact Ford version.
+Caso de uso: conceito estilizado.
+Tipo de imagem: faixa decorativa compacta 3:1 para a tela Início do Ford SpecPulse, aplicativo de especificações de veículos com visual limpo em azul-marinho e azul.
+Pedido principal: ilustração editorial automotiva semirrealista refinada, compatível com a imagem de entrada que mostra uma picape azul-meia-noite em estúdio. Uma picape moderna de cabine dupla, azul-escuro metálico e sem marca, vista em três quartos pela traseira, estacionada em um mirante de pedra clara e lisa. Ao fundo, camadas de montanhas azuis e céu suave ao amanhecer. Fotografia 3D realista sofisticada, carroceria esculpida com precisão, reflexos frios discretos, ambiente tranquilo e elegante.
+Composição: horizontal 3:1; veículo inteiro, levemente à direita do centro e com margens amplas. Ocupa cerca de um terço da largura, com silhueta legível a 350 × 116 pontos.
+Paleta: azul-marinho #001F54, cobalto #0057B8 e azul-acinzentado enevoado. Cenário simples, espaço vazio e horizonte sutil.
+Restrições: sem textos, letras, logotipos, emblemas, marcas-d'água, pessoas, interface, gráficos ou poeira dramática. Conceito decorativo, sem alegar representar fotograficamente uma versão Ford específica.
 ```
 
-### Prompt — compare
+### Instruções de geração — comparação
 
 ```text
-Use case: stylized-concept. Asset type: compact 3:1 decorative banner for the Compare screen of a clean professional automotive specification app. Create sophisticated semi-realistic 3D automotive editorial artwork consistent with a premium midnight-blue pickup studio photograph. Subject: two generic modern crew-cab pickups of different designs, one metallic midnight blue and one satin silver, parked side by side on a seamless deep navy studio floor, both seen from front three-quarter angle, facing slightly inward without touching. Both entire vehicles visible, equal visual weight and equal size, separated by clear breathing space. Thin cool cobalt rim lighting, precise body geometry, clean surfaces and subtle floor reflections, no excessive glow. Wide landscape 3:1; trucks occupy the central two thirds, generous dark navy border area, readable in a shallow mobile banner. Background #001F54, cobalt #0057B8 accents, cool silver. No text, no logos, no letters, no numbers, no badges, no arrows, no comparison labels, no charts, no people, no UI, no watermark. Decorative concept vehicles, not factual representations of selected models.
+Caso de uso: conceito estilizado.
+Tipo de imagem: faixa decorativa compacta 3:1 para a tela Comparar de um aplicativo profissional de especificações automotivas com visual limpo.
+Pedido principal: ilustração editorial automotiva 3D semirrealista sofisticada, compatível com uma fotografia de picape azul-meia-noite em estúdio. Duas picapes modernas genéricas de cabine dupla e desenhos diferentes, uma azul-meia-noite metálica e outra prata acetinada, estacionadas lado a lado em piso contínuo azul-marinho. Ambas vistas em três quartos pela frente, orientadas levemente para dentro, sem se tocar. Veículos inteiros, com o mesmo tamanho e destaque visual, separados por espaço livre.
+Iluminação: contornos finos em azul-cobalto frio, carroceria precisa, superfícies limpas e reflexos discretos no piso, sem brilho excessivo.
+Composição: horizontal 3:1; veículos nos dois terços centrais, bordas amplas azul-marinho e leitura clara em uma faixa baixa no celular.
+Paleta: fundo #001F54, detalhes cobalto #0057B8 e prata fria.
+Restrições: sem textos, logotipos, letras, números, emblemas, setas, rótulos comparativos, gráficos, pessoas, interface ou marcas-d'água. Veículos de conceito decorativos, sem representar factualmente os modelos selecionados.
 ```
 
 ## Escala no aplicativo

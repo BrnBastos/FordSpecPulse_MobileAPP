@@ -2,7 +2,7 @@
 
 Ferramenta de inteligência competitiva automotiva para consultar fichas técnicas e comparar uma versão Ford com uma concorrente. Desafio 01 — Ford FIAP 2026; Sprint 3 de **Mobile Development and IoT**.
 
-**Situação:** versão 1.2.1 com atributos livres, paginação completa, logos das sete marcas do catálogo, fotos Ford e quatro imagens geradas locais. A escala nativa foi corrigida com contêineres proporcionais; telas, abas e seletores respeitam as áreas do sistema no topo e na base. Fontes e prompts em [assets](docs/assets.md). TypeScript, lint e 42 testes aprovados. Login, catálogo e consulta livre foram verificados no Android com conta temporária; o perfil padrão negou a comparação. O resultado completo, histórico preenchido e demonstração restante exigem conta autorizada. Falta a referência complementar da Ranger Raptor. Consulte [a matriz da sprint](docs/sprint-3.md) e [QA](docs/qa-sprint-3.md).
+**Situação:** versão 1.2.1 com atributos livres, paginação completa, logos das sete marcas do catálogo, fotos Ford e quatro imagens geradas locais. A escala nativa foi corrigida com contêineres proporcionais; telas, abas e seletores respeitam as áreas do sistema no topo e na base. Fontes e prompts em [assets](docs/assets.md). TypeScript, lint e 42 testes aprovados. Login, catálogo, ficha e comparação real Raptor × Hilux foram verificados no APK final com a conta de avaliação autorizada. Comparações mista e somente livre, histórico após reinício, reabertura, exclusão e logout passaram. A [galeria final](docs/demonstracao-sprint-3.md) cobre as dez telas. Falta a referência complementar da Ranger Raptor. Consulte [a matriz da sprint](docs/sprint-3.md) e [QA](docs/qa-sprint-3.md).
 
 ## Integrantes
 
@@ -57,7 +57,7 @@ Base atual: `https://ford-spec-pulse-api.onrender.com/api`.
 
 `0` e `false` são valores válidos. “Não informado” não significa ausência confirmada. Conflito e validação pendente permanecem explícitos. Unidades diferentes não produzem uma vantagem calculada no cliente. Sem fonte/data/critério de confiança fornecido, o app não inventa metadados nem percentuais.
 
-A ficha individual e a comparação aceitam termos livres por meio de `/fichas-tecnicas/consultar`. Pedidos desconhecidos e dados ausentes permanecem visíveis; o valor formatado pelo servidor não recebe unidade duplicada. A comparação executa primeiro `/comparacoes`, respeitando suas permissões, e consulta uma ficha por veículo para os termos livres. Fichas reais e retenção de termo desconhecido foram verificadas; o resultado comparativo ainda depende de conta com permissão. A consulta livre confirma marca/modelo/versão/ano/mercado antes de exibir valores.
+A ficha individual e a comparação aceitam termos livres por meio de `/fichas-tecnicas/consultar`. Pedidos desconhecidos e dados ausentes permanecem visíveis; o valor formatado pelo servidor não recebe unidade duplicada. A comparação executa primeiro `/comparacoes`, respeitando suas permissões, e consulta uma ficha por veículo para os termos livres. A comparação real com torque e o termo livre “banco massageador” foi verificada no APK final: o pedido desconhecido permanece explícito, sem valor inventado. A consulta livre confirma marca/modelo/versão/ano/mercado antes de exibir valores.
 
 Veículos, versões, atributos e especificações carregam todas as páginas informadas pela API. Respostas parciais ou inconsistentes produzem erro com nova tentativa, sem exibir dados incompletos como ficha final.
 
@@ -67,7 +67,7 @@ O histórico guarda snapshots versionados, com data, seleção e nomes de versõ
 
 ## APK de release
 
-APK atual: [FordSpecPulse-1.2.1.apk](artifacts/FordSpecPulse-1.2.1.apk) (arquivo local, ignorado pelo Git). Release final assinado usando Render, instalado no Android 16. O reinício a frio restaurou a sessão autenticada; após sair, novo reinício permaneceu no login. Checksum e verificações estão em [QA](docs/qa-sprint-3.md).
+APK atual: [FordSpecPulse-1.2.1.apk](artifacts/FordSpecPulse-1.2.1.apk) (arquivo local, ignorado pelo Git). Release assinado usando Render, instalado no Android 16. Na 1.2.1, foram conferidos áreas seguras, teclado e retorno ao login após refresh rejeitado. Restauração autenticada, histórico persistente e logout após reinício foram confirmados no APK final em 26/09. Checksum e verificações estão em [QA](docs/qa-sprint-3.md).
 
 A cota gratuita de builds Android EAS foi esgotada. A alternativa local usa o mesmo perfil e assinatura:
 
@@ -81,7 +81,7 @@ Requer Java 17, Android SDK/NDK e acesso à conta EAS para recuperar a assinatur
 npx eas-cli build --platform android --profile sprint3
 ```
 
-Projeto [bbastos/FordSpecPulse_Mobile](https://expo.dev/accounts/bbastos/projects/FordSpecPulse_Mobile), pacote `com.brnbastos.fordspecpulse`, versão 1.2.1 / versionCode 4. Perfil `sprint3`: distribuição interna, APK, sem development client. A build embarca o bundle e deve iniciar sem Metro/Expo Go. Credenciais de assinatura são gerenciadas pelo EAS.
+Projeto [bbastos/FordSpecPulse_Mobile](https://expo.dev/accounts/bbastos/projects/FordSpecPulse_Mobile), pacote `com.brnbastos.fordspecpulse`, versão 1.2.1 / código Android 4. Perfil `sprint3`: distribuição interna, APK, sem development client. A build embarca o bundle e deve iniciar sem Metro/Expo Go. Credenciais de assinatura são gerenciadas pelo EAS.
 
 O APK anterior 1.1.0 usava Railway e foi substituído como entrega. Suas capturas e manifesto permanecem históricos. A build concluída não equivale à validação integral dos fluxos autenticados.
 
@@ -105,8 +105,10 @@ assets/images/           Assets do produto
 
 ## Demonstração
 
+[Roteiro e cobertura das dez telas](docs/demonstracao-sprint-3.md) · [Pacote e instruções de entrega](docs/entrega-sprint-3.md). A matriz distingue os requisitos literais do PDF dos cenários adicionais de QA.
+
 Roteiro: abrir APK → entrar → consultar Ranger Raptor exata → escolher atributos → selecionar concorrente → comparar → ver fontes/diferenças → salvar → reabrir Histórico → sair. Demonstrar também vazio, rede indisponível e permissão negada. Capturas reais e limitações estão na [galeria](docs/screenshots/README.md). O vídeo de até seis minutos é exigência da Sprint 4; a demonstração das telas permanece parte da Sprint 3.
 
 [Vídeo de consulta na versão anterior 1.2.0](artifacts/FordSpecPulse-1.2.0-consulta.mp4) — cerca de 20 segundos. É uma evidência parcial de consulta; não substitui a demonstração completa da sprint.
 
-As duas ilustrações geradas são decorativas, locais e leves; [prompts e origem](docs/assets.md). As telas técnicas priorizam valores e mantêm fontes sob expansão.
+As quatro ilustrações geradas são decorativas, locais e leves; [prompts e origem](docs/assets.md). As telas técnicas priorizam valores e mantêm fontes sob expansão.

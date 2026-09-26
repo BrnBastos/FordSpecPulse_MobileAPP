@@ -8,24 +8,24 @@
   "widthDp": 393,
   "fontScale": 1.0,
   "verified": [
-    "real login",
-    "home/catalog/vehicle/version navigation",
-    "unknown free attribute preserved in technical sheet",
-    "expand source metadata",
-    "Raptor/Hilux selection",
-    "free-only comparison permission denied",
-    "empty history artwork",
-    "translated profile and categories",
-    "session restored after final APK install and cold restart",
-    "logout persisted after cold restart"
+    "autenticação real",
+    "navegação por início, catálogo, veículo e versão",
+    "atributo livre desconhecido preservado na ficha técnica",
+    "expansão dos metadados da fonte",
+    "seleção de Raptor e Hilux",
+    "permissão negada para comparação somente com atributos livres",
+    "ilustração do histórico vazio",
+    "perfil e categorias traduzidos",
+    "sessão restaurada após instalação do APK final e reinício completo",
+    "saída da conta persistida após reinício completo"
   ],
-  "freeQueryEvidence": "Captured before final text-only polish; query implementation unchanged.",
+  "freeQueryEvidence": "Capturada antes dos ajustes finais de texto; implementação da consulta sem alterações.",
   "comparisonResponse": "Seu perfil não tem permissão para esta ação.",
   "pending": [
-    "authorized comparison result",
-    "save two real analyses, restart, reopen, delete and account isolation",
-    "full screen demonstration",
-    "comparison against evaluator Ranger Raptor reference"
+    "resultado de comparação autorizada",
+    "salvar duas análises reais, reiniciar, reabrir, excluir e verificar o isolamento entre contas",
+    "demonstração de todas as telas",
+    "conferência com a referência Ranger Raptor do avaliador"
   ],
   "reviewVideo": {
     "path": "artifacts/FordSpecPulse-1.2.0-consulta.mp4",
@@ -34,9 +34,9 @@
   },
   "restoredEmulator": {
     "size": "1080x1400",
-    "density": "reset (420 physical)",
+    "density": "restaurada (densidade física de 420)",
     "fontScale": 1.15,
     "showImeWithHardKeyboard": 0
   },
-  "finalSession": "logged out"
+  "finalSession": "sessão encerrada"
 }

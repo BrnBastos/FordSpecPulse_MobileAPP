@@ -13,7 +13,7 @@
       ],
       "sha256": "937da79e5958456364af96bc1a56ccd2a53f461ad455012f4d94fb88ad65ec17",
       "bytes": 4985,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -27,7 +27,7 @@
       ],
       "sha256": "b71265128724a4b5b72754c81a75aad90d751ab0ba1cbac775db734a4c38703a",
       "bytes": 12668,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -41,7 +41,7 @@
       ],
       "sha256": "4c1e69e6b928efdc3084d1d670d89dd3625fdde703a0ad05a131735d15348b15",
       "bytes": 23652,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -55,7 +55,7 @@
       ],
       "sha256": "f29836640457ecc7600a3201b2588c603f5314083a2125a4d4e22ebc898f1a3d",
       "bytes": 3524,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -69,7 +69,7 @@
       ],
       "sha256": "8603e822e21c55c74b1cc6d02e1802c745d6f4a581c009be610e680414339f15",
       "bytes": 3173,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -83,7 +83,7 @@
       ],
       "sha256": "187e3de2adfe1ae43a74672b524c8d57bb9578b1e13e4737001323873364e39f",
       "bytes": 3693,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "brand",
@@ -97,7 +97,7 @@
       ],
       "sha256": "5f24df6ccee9f9c8be7f3540b3bb511753069f5a01917d0d691e513392018626",
       "bytes": 3240,
-      "rights": "Manufacturer trademark; see dataset and original source."
+      "rights": "Marca registrada do fabricante; consulte o conjunto de dados e a fonte original."
     },
     {
       "kind": "vehicle",
@@ -106,7 +106,7 @@
       "url": "https://www.encontracarros.com.br/upload/ford/ford-ranger-2024_13.jpg",
       "sourcePage": "https://www.encontracarros.com.br/ford-ranger-2024/",
       "credit": "Encontracarros",
-      "rights": "Third-party photograph; illustrative model image. See source page.",
+      "rights": "Fotografia de terceiros; imagem ilustrativa do modelo. Consulte a página de origem.",
       "bytes": 370818,
       "sha256": "bec9ef48bfe2db79f9fad81591c1133f9084c34d0e8275c1f146d6e341998fdc",
       "dimensions": [
@@ -121,7 +121,7 @@
       "url": "https://cdn.autopapo.com.br/box/uploads/2023/11/23190841/ford-ranger-raptor-laranja-saara-2024-frente-parada-em-praia.jpg",
       "sourcePage": "https://autopapo.com.br/noticia/lancamento-ford-ranger-raptor/",
       "credit": "Ford / Divulgação",
-      "rights": "Ford press photograph credited by the source; not an open-license asset.",
+      "rights": "Fotografia de divulgação da Ford, conforme crédito da fonte; não possui licença aberta.",
       "bytes": 180504,
       "sha256": "5949896f21239e5e78f8bdec3c0f738d11b5681e97def57fc2a1fc829810c9cb",
       "dimensions": [

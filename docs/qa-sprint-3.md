@@ -1,6 +1,6 @@
 # QA — Sprint 3 / versão 1.2.1
 
-Atualizado em 25/09/2026. Branch `develop`, implementação posterior à revisão `c3f6ba3`. O código e o APK atual usam Render. Este documento separa testes automatizados, consultas diretas à API e verificações no aplicativo; não declara aprovação integral da sprint.
+Documentação revisada em 26/09/2026; verificações de execução realizadas em 25 e 26/09/2026. Branch `develop`, implementação posterior à revisão `c3f6ba3`. O código e o APK atual usam Render. Este documento separa testes automatizados, consultas diretas à API e verificações no aplicativo; não declara aprovação integral da sprint.
 
 ## Atualização 1.2.1 — imagens e áreas seguras
 
@@ -10,11 +10,28 @@ Atualizado em 25/09/2026. Branch `develop`, implementação posterior à revisã
 - Áreas seguras no topo e na base; abas reservam o inset inferior e ajustam a altura ao tamanho do texto. Seletores medem os insets na própria janela modal.
 - API pública verificada às 17:55 BRT de 25/09: OpenAPI HTTP 200 (16,61 s); revisão às 18:07 BRT: `/api/veiculos` sem credenciais HTTP 401 (0,26 s), OpenAPI HTTP 200 (0,27 s). Timeout comum elevado de 6 para 30 s. [Evidência](evidence/api-availability-2026-09-25.json).
 - Refresh rejeitado com HTTP 422 limpa a sessão inválida; erros temporários preservam a sessão e o motivo original. O erro genérico de conexão reproduzido no emulador vinha desse refresh. A build final foi instalada e o retorno ao login após HTTP 422 foi confirmado nativamente.
-- TypeScript, lint e 42 testes aprovados. Navegação por gestos e três botões verificada no Android 16 com aproximadamente 412 dp e fonte 1.3. Login, cadastro e ações alcançáveis acima do teclado também conferidos em 360 dp / fonte 1.3. O seletor modal tem áreas seguras implementadas, mas sua revisão nativa após esta alteração e a validação em iOS permanecem pendentes.
+- TypeScript, lint e 42 testes aprovados. Navegação por gestos e três botões verificada no Android 16 com aproximadamente 412 dp e fonte 1.3. Login, cadastro e ações alcançáveis acima do teclado também conferidos em 360 dp / fonte 1.3. O seletor modal foi conferido no APK final em 26/09, com a ação Fechar acima da navegação por gestos. iOS não foi validado.
 
 ### APK atual
 
-[FordSpecPulse-1.2.1.apk](../artifacts/FordSpecPulse-1.2.1.apk), versão 1.2.1 / code 4, 111,073,141 bytes. SHA-256: `83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0`. Assinatura válida, Render embarcado, imagens locais e sem logging diagnóstico. [Metadados](apk-metadata-1.2.1.txt), [manifesto de 73 arquivos](release-source-1.2.1.sha256), [capturas](screenshots/README.md).
+[FordSpecPulse-1.2.1.apk](../artifacts/FordSpecPulse-1.2.1.apk), versão 1.2.1 / código Android 4, 111,073,141 bytes. SHA-256: `83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0`. Assinatura válida, Render embarcado, imagens locais e sem logging diagnóstico. [Metadados](apk-metadata-1.2.1.txt), [manifesto de 73 arquivos](release-source-1.2.1.sha256), [capturas](screenshots/README.md).
+
+## Critérios e entrega
+
+A [matriz](sprint-3.md) separa os itens literais do PDF dos cenários adicionais do prompt. [Demonstração por tela](demonstracao-sprint-3.md) e [instruções de entrega](entrega-sprint-3.md) organizam o material disponível; o aceite autorizado de 26/09 está registrado abaixo.
+
+## Validação autorizada — 26/09/2026
+
+APK final 1.2.1, Pixel_9 / Android 16, 1080 × 2424 px, densidade 420, fonte 1.15 e navegação por gestos. A conta original de avaliação foi usada com autorização explícita do responsável; login HTTP 200, perfil ADMINISTRADOR. Não houve alteração de perfil.
+
+- Login nativo, Início, Perfil, catálogo, veículo Raptor, ficha e seleção Ford/concorrente aprovados.
+- Comparação mista Raptor × Hilux: torque de 583 Nm e 500 Nm, respectivamente, conforme resposta real da API. O servidor não informou fonte nessa linha; a interface mostrou fonte não informada e validação pendente.
+- O pedido livre “banco massageador” permaneceu visível nas duas versões como “Não informado / Atributo não reconhecido”.
+- Comparação somente com esse termo livre também gerou resultado real após autorização em `/comparacoes`, sem atributo de catálogo selecionado (`attributeIds: []`).
+- Duas análises foram salvas e permaneceram após encerramento/reinício. Reabertura aprovada; exclusão individual deixou a outra análise intacta. Logout persistiu após novo reinício.
+- Galeria das dez telas renovada com o APK final.
+
+[Galeria do APK final](demonstracao-sprint-3.md). Credenciais e tokens não fazem parte das evidências.
 
 ## Verificações anteriores — versão 1.2.0
 
@@ -83,12 +100,10 @@ As [capturas atuais](screenshots/README.md) distinguem a versão 1.2.0 das image
 
 ## Aceite restante
 
-1. Obter conta com permissão de comparação para validar o resultado real, inclusive pedidos livres/mistos e `attributeIds: []`. O perfil padrão atual permite consulta, mas negou a comparação.
-2. Com o resultado autorizado, salvar duas análises, reiniciar, reabrir/excluir e verificar isolamento entre contas; capturar as telas e a demonstração restante.
-3. Conferir a Ranger Raptor contra o slide complementar ainda não fornecido. Os 23 atributos existentes não garantem que todos os itens da referência estejam cadastrados.
-4. Completar a verificação real de troca de conta e refresh. Instalação final, restauração da sessão e logout persistente após reinício já foram verificados.
+- **PDF:** conferir a Ranger Raptor contra o slide complementar ainda não fornecido. Os 23 atributos existentes não garantem cobertura integral da referência.
+- **QA adicional do prompt:** troca de conta com isolamento e renovação bem-sucedida de token ainda não foram repetidas nativamente nesta sessão; há cobertura automatizada. Restauração, logout e refresh rejeitado já foram verificados no APK final.
 
-O PDF exige a demonstração de todas as telas na Sprint 3 de Mobile Development and IoT (página 13). O vídeo de até seis minutos pertence à Sprint 4 (página 19).
+A demonstração de todas as telas da Sprint 3 está disponível na [galeria final](demonstracao-sprint-3.md). O vídeo de até seis minutos pertence à Sprint 4, página 19.
 
 ## Histórico — versão 1.1.0
 
