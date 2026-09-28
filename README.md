@@ -2,7 +2,7 @@
 
 App para consultar fichas técnicas e comparar um veículo Ford com um concorrente. Trabalho da **Sprint 3 de Mobile Development and IoT — FIAP, Desafio Ford 01**.
 
-## Integrantes
+## Nosso grupo
 
 | Nome | RM |
 |---|---:|
