@@ -1,10 +1,8 @@
 # Ford SpecPulse
 
-Esse é o nosso app para a Sprint 3 de **Mobile Development and IoT**, no desafio Ford da FIAP. A ideia é consultar a ficha de um carro e comparar uma versão Ford com uma concorrente, escolhendo o que a gente quer analisar.
+App para consultar fichas técnicas e comparar um veículo Ford com um concorrente. Trabalho da **Sprint 3 de Mobile Development and IoT — FIAP, Desafio Ford 01**.
 
-O app está na versão **1.2.1** para Android.
-
-## Nosso grupo
+## Integrantes
 
 | Nome | RM |
 |---|---:|
@@ -14,88 +12,29 @@ O app está na versão **1.2.1** para Android.
 | Bruno Silva | 550416 |
 | João Hoffmann | 550763 |
 
-## Para testar
+## Passo a passo para testar
 
-Instale o arquivo **FordSpecPulse-1.2.1.apk** no celular Android ou no emulador. No celular, é só abrir o arquivo e permitir a instalação por essa origem, se o Android pedir. Depois, abra o app com internet e use esta conta:
+1. Na entrega da disciplina, baixe o anexo **FordSpecPulse-1.2.2.apk** para um celular Android. O APK é entregue como anexo, separado deste repositório.
+2. Abra o arquivo baixado e permita a instalação por essa origem quando o Android solicitar. Toque em **Instalar**.
+3. Abra **Ford SpecPulse**, com o celular conectado à internet. Não precisa de Expo Go. Entre com esta conta:
 
-- **Login:** `admin@ford.internal`
-- **Senha:** `admin123`
+   **Login:** `admin@ford.internal`
 
-**Use essa conta para testar a comparação.** O app também tem cadastro, mas uma conta nova pode receber apenas permissão de consulta, dependendo do perfil definido pela API.
+   **Senha:** `admin123`
 
-O APK abre sozinho, sem Expo Go ou computador conectado. Ele fica em `artifacts/FordSpecPulse-1.2.1.apk` no projeto local. **Como o APK não vai para o Git, ele precisa ser anexado à entrega da disciplina.**
+4. Em **Veículos**, procure **Ford Ranger Raptor**, ano **2024**, mercado **BR**. Abra a versão **Raptor 3.0 V6 Biturbo Gasolina 4x4 Cabine Dupla**, selecione **Torque maximo** e toque em **Consultar ficha**.
+5. Vá para **Comparar**. Selecione essa mesma versão Ford e a concorrente **Toyota Hilux**, ano **2024**, mercado **BR**, versão **SRX 2.8 Diesel 4x4 Cabine Dupla**.
+6. Selecione **Torque maximo**, digite **banco massageador** no campo de atributos e toque em **Adicionar atributo**. Depois, toque em **Gerar comparação**.
+7. Confira os valores lado a lado e abra **Fontes e observações**. O termo “banco massageador” aparece como não reconhecido na base; isso não confirma que o equipamento está ausente no veículo.
+8. Toque em **Salvar análise** e abra a aba **Histórico**. Feche e abra o app novamente, volte ao histórico e toque em **Abrir análise** para conferir o resultado salvo. Depois, volte ao histórico e toque em **Excluir análise**.
+9. Volte ao **Início**, abra **Meu perfil** e toque em **Sair da conta**.
 
-Se estiver usando ADB:
+O histórico fica salvo no dispositivo, separado por conta. Consultas e comparações dependem de internet e da API disponível.
 
-```bash
-adb install -r artifacts/FordSpecPulse-1.2.1.apk
-```
+## Sobre a entrega
 
-## Um passeio pelo app
+O trabalho reúne **código-fonte, APK instalável e [demonstração das dez telas](docs/demonstracao-sprint-3.md)**. O app foi feito com React Native, Expo SDK 56 e TypeScript. As telas ficam em `src/app`, os componentes em `src/components` e a integração com a API em `src/services`.
 
-1. Em **Veículos**, procure um modelo e abra a versão. Escolha os atributos ou escreva o que quer consultar e toque em **Consultar ficha**.
-2. Em **Comparar**, escolha a versão Ford e a concorrente. Confira o ano e o mercado, selecione os atributos e toque em **Gerar comparação**. Dá para usar opções do catálogo e termos livres, até 50 por comparação.
-3. No resultado, veja os valores lado a lado. Também dá para filtrar as diferenças e abrir **Fontes e observações**.
-4. Toque em **Salvar análise** para guardar o resultado. Depois, entre no **Histórico** para abrir de novo ou excluir.
-5. Para sair, abra **Meu perfil** na tela inicial e toque em **Sair da conta**.
+O APK 1.2.2 usa a nova API Render; instalação, login, ficha da Raptor e saída da conta foram testados no Android 16. Os fluxos completos de comparação, histórico após reinício e saída da conta foram testados na versão 1.2.1; a atualização muda o endereço do servidor. Também passaram 42 testes automatizados, a checagem de TypeScript e o lint. [Registro dos testes](docs/qa-sprint-3.md).
 
-Uma sugestão para testar é comparar a **Ranger Raptor 2024 BR** com a **Hilux SRX 2024 BR**, escolhendo torque e escrevendo “banco massageador”. Esse exemplo mostra tanto um valor disponível quanto um pedido que a base não reconhece.
-
-**O histórico fica no dispositivo, separado por conta.** Os resultados salvos não mudam automaticamente quando os dados da API mudam. E “não informado” não quer dizer que o carro não tem aquele equipamento: quer dizer que não temos esse dado confirmado.
-
-## Para rodar pelo código
-
-Usamos React Native com Expo SDK 56 e TypeScript. Para abrir o projeto, tenha Node.js 20.19 ou superior, npm e o ambiente Android configurado. Nos testes, usamos Node.js 20.20.2.
-
-```bash
-npm ci
-cp .env.example .env.local
-npm run android
-```
-
-A API já está configurada no `.env.example`, pela variável `EXPO_PUBLIC_API_BASE_URL`:
-
-```text
-https://ford-spec-pulse-api.onrender.com/api
-```
-
-As consultas e comparações precisam de internet e da API disponível. Se a conexão falhar, o app mostra uma opção para tentar novamente.
-
-Para gerar outro APK pelo EAS, com acesso ao projeto e à assinatura:
-
-```bash
-npx eas-cli build --platform android --profile sprint3
-```
-
-## Onde está cada coisa
-
-| Pasta | O que tem |
-|---|---|
-| `src/app/` | Telas e navegação com Expo Router |
-| `src/components/` | Componentes que as telas compartilham |
-| `src/services/` | Comunicação com a API, autenticação e histórico |
-| `src/store/` | Estado da comparação, usando Zustand |
-| `assets/images/` | Imagens do app |
-| `tests/` e `docs/` | Testes, capturas e documentação |
-
-Usamos Axios e TanStack Query nas chamadas à API, SecureStore para a sessão no Android e AsyncStorage para o histórico.
-
-## O que foi testado
-
-O APK foi instalado no Android 16. Testamos entrada na conta, consulta, comparação com atributos do catálogo e livres, salvamento de duas análises, reinício do app, reabertura, exclusão e saída da conta. Também passaram **42 testes automatizados**, a checagem de TypeScript e o lint.
-
-Para rodar as verificações:
-
-```bash
-npm run typecheck
-npm run lint
-npm test
-```
-
-## Para a entrega
-
-Além deste repositório e do APK, deixamos uma [demonstração com as dez telas](docs/demonstracao-sprint-3.md) e os [resultados dos testes](docs/qa-sprint-3.md). O [guia de entrega](docs/entrega-sprint-3.md) reúne os arquivos, e a [matriz da Sprint 3](docs/sprint-3.md) relaciona o que foi feito aos requisitos da disciplina.
-
-**Ainda falta conferir todos os atributos com o slide complementar da Ranger Raptor**, que não recebemos. A consulta real já foi testada, mas essa conferência específica continua pendente. Os detalhes estão na [validação da Raptor](docs/validacao-ranger-raptor.md).
-
-[Contrato da API](docs/contrato-api.md) · [Créditos das imagens](docs/assets.md)
+**Pendência:** o slide da Ranger Raptor já foi conferido. A API ainda retorna alguns dados incompletos e aceleração diferente da referência (5,9 s em vez de 5,8 s). Falta corrigir a base e repetir a validação. [Detalhes](docs/validacao-ranger-raptor.md).

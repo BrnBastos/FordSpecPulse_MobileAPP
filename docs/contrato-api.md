@@ -1,6 +1,10 @@
-# Contrato da API — versão 1.2.0
+# Contrato da API — atualização 1.2.2
 
-Base: `https://ford-spec-pulse-api.onrender.com/api`. O [OpenAPI publicado](https://ford-spec-pulse-api.onrender.com/v3/api-docs) foi recuperado em 25/09/2026 (HTTP 200). Catálogo e consulta de ficha sem token responderam HTTP 401. Uma conta temporária de QA foi cadastrada pelo fluxo normal (HTTP 201), com perfil padrão `SOMENTE_LEITURA`. Foram validadas leituras autenticadas na API e, no APK final, login, navegação, consulta livre, restauração da sessão, logout persistente após reinício e negação da comparação pelo perfil padrão.
+Base atual: `https://ford-spec-pulse-api-r64e.onrender.com/api`.
+
+O endereço foi atualizado em 27/09/2026; login e consulta da ficha foram verificados no novo servidor. Os registros abaixo de 25/09 pertencem ao servidor anterior.
+
+Base histórica: `https://ford-spec-pulse-api.onrender.com/api`. O [OpenAPI publicado](https://ford-spec-pulse-api.onrender.com/v3/api-docs) foi recuperado em 25/09/2026 (HTTP 200). Catálogo e consulta de ficha sem token responderam HTTP 401. Uma conta temporária de QA foi cadastrada pelo fluxo normal (HTTP 201), com perfil padrão `SOMENTE_LEITURA`. Foram validadas leituras autenticadas na API e, no APK final, login, navegação, consulta livre, restauração da sessão, logout persistente após reinício e negação da comparação pelo perfil padrão.
 
 ## Sessão e catálogo
 

@@ -1,5 +1,9 @@
 # Capturas do aplicativo
 
+## Versão 1.2.2 — nova API
+
+[Entrada](1.2.2/login.png) · [Início autenticado](1.2.2/inicio.png). APK com novo endereço Render, instalado sobre a versão anterior. A galeria completa das telas abaixo é da 1.2.1, que tem a mesma interface.
+
 ## APK final 1.2.1 — percurso autorizado de 26/09
 
 A [galeria completa das dez telas](../demonstracao-sprint-3.md) registra login, catálogo, ficha, comparação mista/somente livre, duas análises persistidas após reinício, reabertura, exclusão e logout. Capturas em `1.2.1-final/`, Android 16 / aproximadamente 411 dp / fonte 1.15. As seções abaixo preservam evidências anteriores e seus limites.

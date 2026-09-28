@@ -1,0 +1,23 @@
+{
+  "versao": "1.2.2",
+  "codigoAndroid": 5,
+  "data": "2026-09-27",
+  "api": "https://ford-spec-pulse-api-r64e.onrender.com/api",
+  "apkSha256": "83e082799ae0393d957f2b9db33c09af6bffb5a171281ef8af3ac973d4a6285b",
+  "verificacoes": {
+    "typecheck": "aprovado",
+    "lint": "aprovado",
+    "testes": 42,
+    "atualizacaoSobreVersaoAnterior": "aprovado",
+    "loginNativo": "aprovado",
+    "fichaRaptorTorque583Nm": "aprovado",
+    "saidaDaConta": "aprovado",
+    "assinatura": "válida",
+    "urlNovaNoPacote": "confirmada",
+    "urlAntigaNoPacote": "ausente"
+  },
+  "limites": [
+    "Dados da Raptor continuam incompletos na API",
+    "Comparação e histórico completos foram testados na 1.2.1; não repetidos na 1.2.2"
+  ]
+}

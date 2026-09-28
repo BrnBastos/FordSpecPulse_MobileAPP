@@ -1,5 +1,7 @@
 # Demonstração — Sprint 3
 
+**Atualização 1.2.2:** a URL da API mudou; use o APK atual indicado no [guia de entrega](entrega-sprint-3.md). A galeria completa abaixo registra a versão 1.2.1. A interface não foi alterada nessa atualização; os novos testes de conexão estão em [QA](qa-sprint-3.md).
+
 Aplicativo **1.2.1 / código Android 4**, capturado em 26/09/2026 no Pixel_9 / Android 16, sem Metro ou Expo Go. A galeria cobre as dez telas de conteúdo exigidas pela demonstração visual da página 13 do PDF. Todas as capturas abaixo usam o APK final, SHA-256 `83cfa9d02fcfcce47fc7b74cdc337e40303090055d87365ff3b6012c51444af0`.
 
 ## Percurso por tela
@@ -23,6 +25,6 @@ Os arquivos `_layout` são contêineres de navegação, não telas adicionais. R
 
 A conta original de avaliação foi usada com autorização explícita do responsável. Raptor BR/2024 e Hilux SRX BR/2024 foram comparadas com torque e “banco massageador”. A API retornou 583 Nm e 500 Nm para torque; o termo desconhecido permaneceu explícito nas duas versões. A comparação somente livre também passou. Duas análises foram salvas, persistiram após encerramento/reinício, uma foi reaberta e uma excluída individualmente. Logout persistiu após novo reinício.
 
-A demonstração visual está completa; a conferência exata dos atributos contra o slide complementar Ranger Raptor continua pendente, pois essa referência não foi fornecida. [QA](qa-sprint-3.md) · [Entrega](entrega-sprint-3.md).
+A demonstração visual está completa; a conferência do slide Ranger Raptor, recebido em 26/09, identificou lacunas e divergências na API que ainda precisam ser corrigidas. [QA](qa-sprint-3.md) · [Entrega](entrega-sprint-3.md).
 
 A [prévia gravada na 1.2.0](../artifacts/FordSpecPulse-1.2.0-consulta.mp4) cobre apenas consulta e é histórica. A galeria acima é a demonstração atual; não se trata de um vídeo completo. O limite de seis minutos do PDF pertence à Sprint 4.

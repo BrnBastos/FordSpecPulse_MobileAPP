@@ -22,8 +22,8 @@ Na 1.2.1, foram verificados escala de imagens, áreas seguras, navegação por g
 
 | Pendência | Dependência concreta | Trabalho necessário |
 |---|---|---|
-| Conferência exata da Ranger Raptor | Slide complementar com atributos, versão, ano e mercado de referência. | Confrontar cada item com a saída real e corrigir eventuais divergências na origem dos dados. |
+| Cobertura exata da Ranger Raptor | Acesso ao repositório da API e confirmação do ano/mercado e preço ambíguo do slide. | Corrigir lacunas e divergências já identificadas na conferência da página 13 e repetir os testes. |
 
-O cadastro normal anterior forneceu perfil `SOMENTE_LEITURA`; a validação atual usou a conta de avaliação existente, sem elevar permissões. A referência complementar não foi localizada nos arquivos Ford examinados. Nenhum dado fictício foi acrescentado para preencher evidências ausentes.
+O cadastro normal anterior forneceu perfil `SOMENTE_LEITURA`; a validação atual usou a conta de avaliação existente, sem elevar permissões. A referência foi recebida em `FORD_apresentacao (1).pdf`, página 13, e comparada com uma nova resposta real da API em 26/09. Nenhum dado fictício foi acrescentado para preencher evidências ausentes.
 
 Detalhes: [QA](qa-sprint-3.md), [contrato](contrato-api.md) e [validação Raptor](validacao-ranger-raptor.md).

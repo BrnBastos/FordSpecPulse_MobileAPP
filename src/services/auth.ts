@@ -9,7 +9,7 @@ import axios, {
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const DEFAULT_API_BASE_URL = "https://ford-spec-pulse-api.onrender.com/api";
+const DEFAULT_API_BASE_URL = "https://ford-spec-pulse-api-r64e.onrender.com/api";
 
 // Allow for the slower startup responses observed on the hosted API.
 const API_REQUEST_TIMEOUT_MS = 30_000;

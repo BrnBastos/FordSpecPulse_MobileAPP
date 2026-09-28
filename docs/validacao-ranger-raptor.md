@@ -1,68 +1,53 @@
-# Ranger Raptor — dados reais consultados; referência pendente
+# Ranger Raptor — conferência com o slide da Ford
 
-O PDF `Ford_V2.pdf` (21 páginas), recebido em 21/09/2026, exige na página 5 a conferência das especificações de um slide de referência. As páginas 4–5 foram inspecionadas visualmente e não trazem essa tabela. O slide complementar continua pendente; esta consulta não representa aprovação do caso pelo avaliador.
+Referência recebida em 26/09/2026: **FORD_apresentacao (1).pdf**, página **13**, “RANGER RAPTOR”. A página **18** pede que a solução entregue corretamente todas as especificações desse slide. A referência foi localizada; a conferência revelou diferenças e dados ausentes na API.
 
-## Identidade confirmada na API
+## Consulta realizada
 
-Consulta autenticada realizada em 25/09/2026 com conta temporária de QA, perfil padrão `SOMENTE_LEITURA`, sem elevar permissões. Catálogo, consulta direta da versão, especificações e ficha retornaram HTTP 200.
+A conta de avaliação autorizada consultou a API Render em 26/09/2026, usando o mesmo endpoint e formato de pedido do aplicativo: `POST /api/fichas-tecnicas/consultar`. A resposta autenticada foi bem-sucedida. Foram pedidos 19 termos para separar os componentes das 14 linhas do slide.
 
-- Marca/modelo: **Ford Ranger Raptor**.
-- Ano-modelo/mercado: **2024 / BR**.
-- Versão: **Raptor 3.0 V6 Biturbo Gasolina 4x4 Cabine Dupla**.
-- ID do veículo: `vehicle-ford-ranger-raptor-2024`.
-- ID da versão no catálogo: `version-ford-ranger-raptor-raptor-3-0-v6-biturbo-gasolina-4x4-cabine-dupla-2024`.
-- UUID da ficha: `33333333-3333-3333-3333-000000000005`.
-- Consulta da ficha: `2026-09-25T15:17:43.452395842Z` (UTC, informado pelo servidor).
+Identidade retornada: **Ford Ranger Raptor, Raptor 3.0 V6 Biturbo Gasolina 4x4 Cabine Dupla, 2024 / BR**. O slide não explicita ano-modelo ou mercado; essa equivalência não deve ser presumida apenas pela foto. O resultado abaixo compara o conteúdo fornecido com a versão disponível no catálogo.
 
-O catálogo usa slug e a ficha usa UUID. Marca, modelo, nome da versão, ano e mercado coincidem integralmente entre as respostas. A lista de especificações preserva o ID do catálogo em todas as linhas. Foram recuperadas três páginas de 10, 10 e 3 itens, com total estável de 23 e sem atributos duplicados.
+## Conferência item por item
 
-## 23 atributos retornados
+| Item | Referência do slide | Retorno atual | Resultado |
+|---|---|---|---|
+| Motor | V6 3.0L Nano biturbo | “Motor” não reconhecido; nome da versão informa 3.0 V6 biturbo, sem Nano | Incompleto |
+| Potência | 397 cv a 5.650 RPM | 397 cv; rotação não reconhecida | Valor confere; falta rotação |
+| Torque | 583 Nm a 3.500 RPM | 583 Nm; rotação não reconhecida | Valor confere; falta rotação |
+| Transmissão | Automática de 10 velocidades e paddle shifters | Ambos os pedidos não reconhecidos | Ausente |
+| Tração | 4WD | Pedido não reconhecido; o nome da versão contém 4x4 | Ausente na ficha consultada |
+| Amortecedores | Live Valve FOX Racing 2,5 polegadas | Suspensões dianteira e traseira citam FOX Live Valve 2.5 | Compatível com a tecnologia e medida; falta designação Racing |
+| Aceleração de 0 a 100 km/h | 5,8 s | 5,9 s | Divergente |
+| Modos de condução | Normal, Sport, Escorregadio, Lama, Areia, Rock Crawl, Baja | 7 | Quantidade compatível; faltam os nomes |
+| Modos de volante | Normal, Sport, Conforto | Pedido não reconhecido | Ausente |
+| Modos de escapamento | Normal, Silencioso, Sport, Baja | Pedido não reconhecido | Ausente |
+| Modos de amortecedor | Normal, Sport, Baja | Pedido não reconhecido | Ausente |
+| Faróis | Matrix LED | Pedido não reconhecido | Ausente |
+| Rodas e pneus | Rodas de 17 polegadas, pneus 285/70 R17 AT | Pneus BFGoodrich All-Terrain T/A KO2 285/70 R17; “Rodas” não reconhecido | Pneus compatíveis; falta resposta para rodas |
+| Preço | Texto literal “R$499.00” | Pedido não reconhecido | Ausente; valor do slide precisa de esclarecimento |
 
-Os valores e rótulos de fonte abaixo são declarações do backend. Não houve conferência externa das páginas de origem nem equivalência comprovada com o slide do avaliador. Os 21 valores presentes têm `dataCaptura` igual a `2026-09-23T01:14:55.648523Z`; os dois consumos vieram sem valor ou fonte.
+O preço está escrito assim no próprio slide, não apenas na extração de texto. Não foi convertido para R$ 499.000 nem usado para substituir o preço do catálogo. A frase promocional sobre ser a picape mais rápida não foi tratada como medição técnica.
 
-| Atributo da API | Valor retornado | Estado da ficha | Fonte informada | Referência do avaliador |
-| --- | --- | --- | --- | --- |
-| Potencia maxima | 397 cv | PRESENTE | Site Oficial Ford | Pendente |
-| Torque maximo | 583 Nm | PRESENTE | Site Oficial Ford | Pendente |
-| Capacidade de carga | 652 kg | PRESENTE | Site Oficial Ford | Pendente |
-| Capacidade de reboque | 2500 kg | PRESENTE | Site Oficial Ford | Pendente |
-| Central multimidia | 12 pol | PRESENTE | Site Oficial Ford | Pendente |
-| Quantidade de airbags | 6 | PRESENTE | Site Oficial Ford | Pendente |
-| Controle de descida | Sim | PRESENTE | Site Oficial Ford | Pendente |
-| Cilindrada do motor | 3 L | PRESENTE | Site Oficial Ford | Pendente |
-| Velocidade maxima | 180 km/h | PRESENTE | Site Oficial Ford | Pendente |
-| Aceleracao de 0 a 100 km/h | 5.9 s | PRESENTE | Site Oficial Ford | Pendente |
-| Peso em ordem de marcha | 2475 kg | PRESENTE | Site Oficial Ford | Pendente |
-| Pneus / medida | BFGoodrich All-Terrain T/A KO2 285/70 R17 | PRESENTE | Site Oficial Ford | Pendente |
-| Suspensao dianteira | Independente duplo bracos com amortecedores FOX Live Valve 2.5 | PRESENTE | Site Oficial Ford | Pendente |
-| Suspensao traseira | Multilink Watts Link com amortecedores FOX Live Valve 2.5 | PRESENTE | Site Oficial Ford | Pendente |
-| Modos de conducao | 7 | PRESENTE | Site Oficial Ford | Pendente |
-| Bloqueio diferencial dianteiro | Sim | PRESENTE | Site Oficial Ford | Pendente |
-| Bloqueio diferencial traseiro | Sim | PRESENTE | Site Oficial Ford | Pendente |
-| Altura livre do solo | 272 mm | PRESENTE | Site Oficial Ford | Pendente |
-| Angulo de ataque | 32 graus | PRESENTE | Site Oficial Ford | Pendente |
-| Angulo de saida | 24 graus | PRESENTE | Site Oficial Ford | Pendente |
-| Painel digital | 12.4 pol | PRESENTE | Site Oficial Ford | Pendente |
-| Consumo urbano | Não informado | NAO_INFORMADO | Não fornecida | Pendente |
-| Consumo rodoviario | Não informado | NAO_INFORMADO | Não fornecida | Pendente |
+[Pedido e resposta reais, sem credenciais](evidence/raptor-conferencia-slide-2026-09-26.json). A evidência inclui o hash do PDF para identificar a referência usada. Os estados `ATRIBUTO_DESCONHECIDO` e os valores retornados foram preservados.
 
-Potência e torque também retornaram `397 cv` e `583 Nm` na lista de especificações. Os consumos urbano e rodoviário permanecem `NAO_INFORMADO`; não foram estimados. Dois pedidos adicionais, “Ajuste elétrico do banco do passageiro” e “Autonomia orbital QA”, foram usados somente para verificar retenção de termos fora da taxonomia: ambos retornaram `ATRIBUTO_DESCONHECIDO` e valor nulo. Eles não integram as 23 linhas de referência acima.
+## O que precisa ser corrigido
 
-Respostas preservadas sem credenciais, tokens ou dados de usuário:
+1. Confirmar a identidade de ano/mercado do slide e esclarecer o preço.
+2. Na API, completar a taxonomia e os sinônimos dos termos ausentes, cadastrar os valores e associar a fonte recebida. Incluir rotações, nomes dos modos e os demais detalhes da tabela.
+3. Resolver o conflito de aceleração com a referência aplicável. Registrar a origem e não sobrescrever silenciosamente um dado de outro ano-modelo.
+4. Publicar a correção da API e repetir a consulta acima e o percurso no APK. A ficha e a comparação devem apresentar os mesmos dados e manter a origem visível.
 
-- [Ficha consultada, incluindo os dois termos de teste](evidence/ranger-raptor-2024-sheet.json).
-- [Três páginas de especificações e identidade do catálogo](evidence/ranger-raptor-2024-specifications.json).
+A documentação OpenAPI consultada não oferece criação/edição de atributos ou especificações. As rotas de alteração de usuários não resolvem essas lacunas. O repositório da API não foi localizado no ambiente; sua localização foi solicitada ao responsável.
 
-Essas evidências foram coletadas diretamente na API. A conferência da renderização no APK e as capturas correspondentes ficam em [QA da Sprint 3](qa-sprint-3.md).
+**Aceite ainda aberto:** reprodução completa do slide. O aplicativo permite solicitar esses termos e mostra corretamente os estados recebidos, mas isso não satisfaz a exigência de retornar todas as especificações corretas. Nenhum valor fixo foi inserido no aplicativo para esconder a diferença da base.
 
-## Referência provisória anterior — modelo 2026
+## Evidências anteriores
 
-A [página Ford Brasil para Raptor 3.0 V6 Bi-turbo 4WD AT 2026](https://www.ford.com.br/picapes/ranger-raptor/raptor-4wd-at/), consultada em 21/09/2026, informa motor 3.0 V6 biturbo a gasolina, 397 cv e 583 Nm. Ela descreve outro ano-modelo e não foi usada para aprovar os dados 2024 nem substituir a referência do avaliador. A coincidência de potência e torque não comprova equivalência entre as versões.
+A consulta de 25/09 registrou 23 atributos do catálogo, com 21 valores presentes e dois consumos não informados. Essa quantidade não comprova cobertura do slide agora recebido.
 
-## Aceite restante
+- [Ficha anterior](evidence/ranger-raptor-2024-sheet.json).
+- [Especificações anteriores do catálogo](evidence/ranger-raptor-2024-specifications.json).
+- [Testes e capturas do aplicativo](qa-sprint-3.md).
 
-Receber o slide complementar, confirmar se o caso exigido corresponde à identidade 2024/BR encontrada e comparar cada atributo requerido — incluindo qualquer atributo ausente desta taxonomia — por valor, unidade, estado e fonte. Registrar diferenças sem corrigir dados por suposição. Nenhum veículo sintético foi criado no catálogo; os testes automatizados não comprovam exatidão automotiva.
-
-## Material complementar examinado em 26/09/2026
-
-A apresentação local `Ford_SpecPulse_Twin_Apresentacao.pptx` menciona a planilha `FIAP-Ford Data sheet Desafio 01 v02.xlsx`. O slide 7 descreve Ranger 26MY nas versões XLT, Limited e Limited+; o slide 19 apresenta um exemplo Limited+. Isso não comprova a referência Ranger Raptor exigida na página 5 do PDF. A planilha citada não foi encontrada nas pastas locais examinadas. A identidade e os atributos da referência continuam pendentes.
+O arquivo `Ford.rar` também contém `FIAP-Ford - Data sheet_Desafio_01_v02.xlsx` e `vin_share_Desafio_02.xlsx`. A referência explícita para esta conferência é a página 13 da apresentação; a segunda planilha pertence ao outro desafio.

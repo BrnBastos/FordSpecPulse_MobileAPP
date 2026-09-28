@@ -1,4 +1,14 @@
-# QA — Sprint 3 / versão 1.2.1
+# QA — Sprint 3 / versão 1.2.2
+
+## Atualização 1.2.2 — novo endereço da API
+
+Em 27/09/2026, a base foi atualizada para `https://ford-spec-pulse-api-r64e.onrender.com/api` no cliente, no `.env.example` e no perfil de compilação EAS. A documentação pública, o login da conta de avaliação e a consulta da Raptor responderam com sucesso. A primeira chamada pública levou aproximadamente 18 segundos.
+
+TypeScript, lint e os 42 testes passaram. O APK assinado 1.2.2 / código Android 5 foi instalado sobre a versão anterior no Android 16. Login nativo, ficha da Raptor com torque de 583 Nm e saída da conta aprovados na nova instalação. [Capturas](screenshots/1.2.2/). O pacote contém a nova URL e não contém a URL antiga no código JavaScript embarcado. [Manifesto](release-source-1.2.2.sha256), [metadados](apk-metadata-1.2.2.txt), [consulta real na API nova](evidence/raptor-nova-api-2026-09-27.json).
+
+As lacunas da referência Raptor continuam presentes na nova API, incluindo aceleração de 5,9 s e termos não reconhecidos. A troca de servidor não resolve esses dados. Os testes completos de comparação e histórico registrados abaixo pertencem à versão 1.2.1.
+
+## Histórico da validação 1.2.1
 
 Documentação revisada em 26/09/2026; verificações de execução realizadas em 25 e 26/09/2026. Branch `develop`, implementação posterior à revisão `c3f6ba3`. O código e o APK atual usam Render. Este documento separa testes automatizados, consultas diretas à API e verificações no aplicativo; não declara aprovação integral da sprint.
 
@@ -100,7 +110,7 @@ As [capturas atuais](screenshots/README.md) distinguem a versão 1.2.0 das image
 
 ## Aceite restante
 
-- **PDF:** conferir a Ranger Raptor contra o slide complementar ainda não fornecido. Os 23 atributos existentes não garantem cobertura integral da referência.
+- **PDF:** corrigir lacunas e divergências da API identificadas em 26/09 na [conferência da página 13 da apresentação Ford](validacao-ranger-raptor.md). A referência foi recebida; os 23 atributos do catálogo não cobrem todos os detalhes pedidos.
 - **QA adicional do prompt:** troca de conta com isolamento e renovação bem-sucedida de token ainda não foram repetidas nativamente nesta sessão; há cobertura automatizada. Restauração, logout e refresh rejeitado já foram verificados no APK final.
 
 A demonstração de todas as telas da Sprint 3 está disponível na [galeria final](demonstracao-sprint-3.md). O vídeo de até seis minutos pertence à Sprint 4, página 19.
